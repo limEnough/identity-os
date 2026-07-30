@@ -15,10 +15,11 @@ import {
   OrbStage,
   Screen,
 } from "@identity-os/design-system";
+import { AXES } from "@identity-os/identity-core";
 import { ResumeBanner } from "./_components/ResumeBanner";
 import {
+  axisStore,
   forgetAll,
-  identityStore,
   loadResume,
   type Resume,
 } from "./_lib/progress";
@@ -30,7 +31,9 @@ import {
  */
 export default function IntroPage() {
   const router = useRouter();
-  const store = useMemo(() => identityStore(), []);
+  // 여정은 언제나 첫 축에서 시작한다 — 순서가 곧 의존이므로
+  const first = AXES[0];
+  const store = useMemo(() => axisStore(first), [first]);
   const [resume, setResume] = useState<Resume | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -42,7 +45,7 @@ export default function IntroPage() {
   const confirmStart = () => {
     forgetAll();
     store.save([]);
-    router.push("/identity");
+    router.push(`/${first.id}`);
   };
 
   return (

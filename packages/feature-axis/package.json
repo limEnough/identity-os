@@ -1,8 +1,8 @@
 {
-  "name": "@identity-os/feature-style",
+  "name": "@identity-os/feature-axis",
   "version": "0.1.0",
   "private": true,
-  "description": "Style 피처 — 확정된 가치 위에서 감각을 물어 무드에 이름 붙이는 여정 (장면→질감→빛→색→거리→명명→표현)",
+  "description": "축 피처 — 여덟 축이 함께 쓰는 여정 화면과 결과 카드 (어느 축인지는 AxisDef가 정한다)",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

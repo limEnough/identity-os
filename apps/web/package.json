@@ -10,8 +10,7 @@
   },
   "dependencies": {
     "@identity-os/design-system": "*",
-    "@identity-os/feature-identity": "*",
-    "@identity-os/feature-style": "*",
+    "@identity-os/feature-axis": "*",
     "@identity-os/identity-core": "*",
     "next": "^15.3.0",
     "react": "^19.0.0",

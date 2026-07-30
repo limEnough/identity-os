@@ -1,36 +1,6 @@
-"use client";
+import { AxisRoute } from "../_lib/AxisRoute";
 
-import { Suspense, useMemo } from "react";
-import { Brand } from "@identity-os/design-system";
-import { IdentityFlow } from "@identity-os/feature-identity";
-import { identityStore } from "../_lib/progress";
-import { useChainRoute } from "../_lib/useChainRoute";
-
-/**
- * Identity 라우트 — /identity?i=발자국
- * 라우팅과 저장은 앱 셸이 맡고, 피처는 걸음만 걷는다.
- */
-function IdentityRoute() {
-  const store = useMemo(() => identityStore(), []);
-  const chain = useChainRoute({
-    store,
-    param: "i",
-    path: "/identity",
-    donePath: "/guide",
-  });
-
-  return (
-    <main>
-      <Brand>IDENTITY · 나를 가다듬는 중</Brand>
-      <IdentityFlow {...chain} />
-    </main>
-  );
-}
-
+/** 여정의 한 축 — 순서·잠금·저장은 AxisRoute가, 내용은 축 데이터(axis/axes/identity)가 정한다 */
 export default function Page() {
-  return (
-    <Suspense>
-      <IdentityRoute />
-    </Suspense>
-  );
+  return <AxisRoute id="identity" />;
 }
