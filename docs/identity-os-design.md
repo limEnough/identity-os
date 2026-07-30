@@ -330,7 +330,7 @@ sequenceDiagram
 1. **Phase 1 — Discover 퍼널 (완료)**: 기존 추구미 여정. 이미 구현되어 있다.
 2. **Phase 2 — Identity 축 루프**: `feature-axis-loop` + `identity-core`의 Identity 축 Why 체인 트리(구조화, LLM 없이). 출구에서 Identity Statement 발급. 여기까지 익명.
 3. **Phase 3 — 가이드북 v1 (완료)**: Identity 섹션이 채워진 My Life Guide 웹 뷰. Style 섹션은 잠금 상태로 노출(불변식의 시각화). PDF·Taste 편입은 미착수.
-   3.5. **Phase 3.5 — Style 축 해금 (완료)**: 무드 체인(장면→질감→빛→거리→명명→표현) + 나의 무드(3축 좌표·표현 언어). Phase 6보다 먼저 왔다 — Identity 직후 사용자가 가장 먼저 되묻는 축이 Style이고, 잠금을 시각화만 해두면 여정이 거기서 끊기기 때문. 불변식은 라우트 가드(`/style`은 Identity 미완주 시 인트로로 되돌림)로 지켰다.
+   3.5. **Phase 3.5 — Style 축 해금 (완료)**: 무드 체인(장면→질감→빛→색→거리→명명→표현) + 나의 무드(3축 좌표·표현 언어). 좌표의 출발점은 Identity에서 확정된 가치가 기울인다(`VALUE_LEAN`) — 잎은 뿌리 위에서 자라므로 `replayStyle(발자국, 가치)`는 가치를 함께 받는다. 판정이 되지 않도록 기울기는 한 걸음의 절반 아래로 두고, 8분면 경계에서는 이웃 무드를 함께 내민다. Phase 6보다 먼저 왔다 — Identity 직후 사용자가 가장 먼저 되묻는 축이 Style이고, 잠금을 시각화만 해두면 여정이 거기서 끊기기 때문. 불변식은 라우트 가드(`/style`은 Identity 미완주 시 인트로로 되돌림)로 지켰다.
 4. **Phase 4 — 계정·실천 루프**: Supabase 도입, 실천 카드·회고·버전. 리마인드(주간 회고 프롬프트).
 5. **Phase 5 — LLM 코치**: /api/coach 심화 모드 + 위기 필터 + Insight 추출.
 6. **Phase 6 — 나머지 축 확장**: Mindset → Communication → Lifestyle → Taste → Health → Career. 축마다 같은 루프 재사용이므로 콘텐츠(트리 설계) 작업이 대부분. Taste가 붙는 시점에 §3.1의 "Taste 공통 키워드 → Style 입력" 연결을 실제로 잇는다(ver1의 Style은 Identity의 핵심 가치만 입력으로 받는다 — Taste가 아직 없어서다).
