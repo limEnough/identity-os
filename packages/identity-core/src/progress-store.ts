@@ -11,11 +11,11 @@ export interface ProgressStore {
   clear(): void;
 }
 
-export const STORAGE_KEY = 'identity-os:v1';
-/** Style 여정의 발자국 — Identity와 따로 기억한다 (Identity를 다시 걸어도 무드는 남는다) */
-export const STYLE_STORAGE_KEY = 'identity-os:style:v1';
-
-export function createLocalStore(key: string = STORAGE_KEY): ProgressStore {
+/**
+ * 키는 축마다 하나이고, 그 키는 축 데이터(AxisDef.storageKey)가 들고 있다 —
+ * 저장소는 어떤 축이 여덟 중 몇 번째인지 알 필요가 없다.
+ */
+export function createLocalStore(key: string): ProgressStore {
   return {
     load() {
       try {

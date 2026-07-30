@@ -1,0 +1,347 @@
+import { canon } from '../canon';
+import { eul, iga } from '../../josa';
+import type { AxisDef, AxisOpening, AxisOption, AxisOutcome } from '../types';
+
+/**
+ * 7. Health — 몸을 어떻게 돌보는가.
+ *
+ * 여섯 축을 지나온 자리에서 묻는다. 그래서 이 축은 목표를 세우지 않는다 —
+ * 이미 드러난 가치·생각·관계·하루·끌림·무드 위에서, **그 사람의 몸이 어떤 돌봄을
+ * 받아들이는지**를 묻는다. 좋은 습관의 목록에는 정답이 있어도, 지켜지는 돌봄에는 없다.
+ */
+
+const OPENINGS: AxisOpening[] = [
+  {
+    emoji: '🛏',
+    title: '아침에 눈을 뜬 순간',
+    sub: '몸이 먼저 말을 거는 시간',
+    label: '눈을 뜬 순간',
+    short: '아침의 몸',
+    shift: [-0.6, 0.2, -0.5],
+    children: [
+      { title: '바로 일어나 몸을 편다', label: '일어나 몸을 폄', shift: [0.4, 0.6, -0.2] },
+      { title: '한참 누워 몸을 깨운다', label: '누워 깨움', shift: [-0.8, -0.4, -0.4] },
+      { title: '물이나 커피를 먼저 마신다', label: '먼저 마심', shift: [-0.2, 0.3, -0.1] },
+      { title: '몸이 무거운지 먼저 살핀다', label: '무거운지 살핌', shift: [-0.5, 0.2, -0.6] },
+    ],
+    scoped: [
+      { title: '늦게 잠든 다음날', label: '늦게 잠든 다음날', phrase: '늦게 잠든 다음날 아침', shift: [-0.6, -0.3, -0.3] },
+      { title: '해야 할 일이 밀린 아침', label: '일이 밀린 아침', phrase: '일이 밀린 아침', shift: [0.3, 0.4, 0.1] },
+      { title: '며칠 무리한 뒤', label: '무리한 뒤', phrase: '며칠 무리한 뒤', shift: [-0.7, 0.1, -0.2] },
+      { title: '잘 자고 난 아침', label: '잘 자고 난 아침', phrase: '잘 자고 난 아침', shift: [0.5, 0.2, 0.2] },
+    ],
+  },
+  {
+    emoji: '🪑',
+    title: '오래 앉아 있은 뒤',
+    sub: '몸이 굳어 있는 걸 알아챌 때',
+    label: '오래 앉아 있은 뒤',
+    short: '굳은 몸을 알아챌 때',
+    shift: [0.2, 0.3, -0.3],
+    children: [
+      { title: '일어나 걷거나 스트레칭한다', label: '걷거나 편다', shift: [0.5, 0.4, -0.1] },
+      { title: '자리에서 자세만 고친다', label: '자세만 고침', shift: [-0.3, 0.5, -0.4] },
+      { title: '바람 쐬러 밖으로 나간다', label: '밖으로 나감', shift: [0.4, -0.2, 0.5] },
+      { title: '그냥 계속 앉아 있는다', label: '계속 앉아 있음', shift: [-0.6, -0.6, -0.3] },
+    ],
+    scoped: [
+      { title: '집중이 잘 되고 있을 때', label: '집중되던 중', phrase: '집중이 잘되던 중', shift: [-0.4, 0.5, -0.4] },
+      { title: '마감이 다가올 때', label: '마감이 다가옴', phrase: '마감이 다가온 자리', shift: [0.2, 0.4, 0] },
+      { title: '허리나 목이 아플 때', label: '아플 때', phrase: '허리가 아팠던 순간', shift: [-0.2, 0.6, -0.2] },
+      { title: '누가 같이 나가자고 할 때', label: '같이 나가자고 할 때', phrase: '같이 나가자던 순간', shift: [0.4, -0.3, 0.8] },
+    ],
+  },
+  {
+    emoji: '💧',
+    title: '땀이 나도록 움직일 때',
+    sub: '숨이 차오르는 시간',
+    label: '땀 나는 움직임',
+    short: '땀 나는 움직임',
+    shift: [0.9, 0.4, 0.2],
+    children: [
+      { title: '기록이나 무게를 늘려간다', label: '기록을 늘림', shift: [0.7, 0.9, 0] },
+      { title: '땀이 날 만큼만 가볍게 한다', label: '가볍게 함', shift: [0.4, -0.5, -0.1] },
+      { title: '사람들과 함께 뛰거나 겨룬다', label: '함께 뛰거나 겨룸', shift: [0.8, 0.4, 0.9] },
+      { title: '음악 듣고 혼자 몰입한다', label: '혼자 몰입함', shift: [0.6, 0.2, -0.7] },
+    ],
+    scoped: [
+      { title: '기운이 없는 날에도', label: '기운 없는 날', phrase: '기운 없던 날', shift: [-0.4, 0.4, -0.2] },
+      { title: '몸이 눈에 보이게 달라질 때', label: '몸이 달라질 때', phrase: '몸이 달라지던 무렵', shift: [0.6, 0.6, 0.4] },
+      { title: '한동안 쉬었다 다시 시작할 때', label: '다시 시작할 때', phrase: '다시 시작하던 자리', shift: [0.3, 0.3, -0.1] },
+      { title: '누가 함께해 줄 때', label: '함께해 줄 때', phrase: '함께해 준 자리', shift: [0.5, 0, 0.9] },
+    ],
+  },
+  {
+    emoji: '🍚',
+    title: '먹고 난 뒤',
+    sub: '몸이 무거워지거나 가벼워지는',
+    label: '먹고 난 뒤',
+    short: '먹고 난 뒤의 몸',
+    shift: [-0.1, 0.2, 0.1],
+    children: [
+      { title: '무엇을 먹었는지 되짚는다', label: '되짚음', shift: [-0.3, 0.7, -0.4] },
+      { title: '가볍게 걷는다', label: '가볍게 걸음', shift: [0.4, 0.1, 0] },
+      { title: '기분이 좋아졌는지 본다', label: '기분을 봄', shift: [0.1, -0.6, 0.2] },
+      { title: '다음 끼니를 미리 정한다', label: '다음 끼니를 정함', shift: [-0.2, 0.8, 0.1] },
+    ],
+    scoped: [
+      { title: '혼자 먹은 끼니 뒤', label: '혼자 먹은 뒤', phrase: '혼자 먹은 끼니 뒤', shift: [-0.3, 0.2, -0.7] },
+      { title: '누군가와 함께 먹은 뒤', label: '함께 먹은 뒤', phrase: '함께 먹은 뒤', shift: [0.2, -0.4, 0.8] },
+      { title: '늦은 밤에 먹은 뒤', label: '늦은 밤에 먹은 뒤', phrase: '늦은 밤에 먹은 뒤', shift: [-0.4, -0.3, -0.2] },
+      { title: '급하게 때운 뒤', label: '급하게 때운 뒤', phrase: '급하게 때운 뒤', shift: [0.3, -0.2, 0.1] },
+    ],
+  },
+  {
+    emoji: '🌙',
+    title: '잠들기 전',
+    sub: '하루를 몸에서 내려놓는 시간',
+    label: '잠들기 전',
+    short: '잠들기 전의 몸',
+    shift: [-0.8, -0.1, -0.6],
+    children: [
+      { title: '정해둔 순서로 하루를 닫는다', label: '정해둔 순서로 닫음', shift: [-0.5, 0.8, -0.4] },
+      { title: '화면을 보다 그대로 잠든다', label: '보다 잠듦', shift: [-0.3, -0.7, -0.3] },
+      { title: '몸을 늘리거나 씻는다', label: '늘리거나 씻음', shift: [0.1, 0.4, -0.3] },
+      { title: '오늘 몸이 어땠는지 적는다', label: '몸을 적음', shift: [-0.4, 0.7, -0.5] },
+    ],
+    scoped: [
+      { title: '마음이 소란한 밤', label: '마음이 소란한 밤', phrase: '마음이 소란한 밤', shift: [-0.5, -0.2, -0.4] },
+      { title: '몸이 뻐근한 밤', label: '몸이 뻐근한 밤', phrase: '몸이 뻐근한 밤', shift: [-0.4, 0.4, -0.3] },
+      { title: '내일이 이른 밤', label: '내일이 이른 밤', phrase: '내일이 이른 밤', shift: [-0.2, 0.7, -0.1] },
+      { title: '기분 좋게 지친 밤', label: '기분 좋게 지친 밤', phrase: '기분 좋게 지친 밤', shift: [0.3, 0.1, 0.2] },
+    ],
+  },
+  {
+    emoji: '🩹',
+    title: '몸이 무너졌을 때',
+    sub: '아프거나 완전히 지쳤을 때',
+    label: '몸이 무너졌을 때',
+    short: '무너진 몸',
+    shift: [-0.5, 0, 0],
+    children: [
+      { title: '전부 멈추고 눕는다', label: '멈추고 누움', shift: [-0.9, -0.3, -0.4] },
+      { title: '해야 할 것만 최소로 한다', label: '최소로 함', shift: [-0.4, 0.6, -0.3] },
+      { title: '병원이나 도움을 찾는다', label: '도움을 찾음', shift: [-0.2, 0.5, 0.8] },
+      { title: '참고 그대로 밀고 간다', label: '참고 밀고 감', shift: [0.5, 0.5, -0.2] },
+    ],
+    scoped: [
+      { title: '남에게 말하기 어려울 때', label: '말하기 어려울 때', phrase: '말하기 어려웠던 자리', shift: [-0.3, 0.2, -0.8] },
+      { title: '해야 할 일이 남았을 때', label: '일이 남았을 때', phrase: '일이 남아 있던 자리', shift: [0.4, 0.5, 0] },
+      { title: '누가 챙겨줄 때', label: '누가 챙겨줄 때', phrase: '누가 챙겨준 자리', shift: [-0.3, -0.3, 0.9] },
+      { title: '이런 일이 반복될 때', label: '반복될 때', phrase: '반복되던 무렵', shift: [-0.2, 0.7, 0.1] },
+    ],
+  },
+];
+
+const CARE: AxisOption[] = [
+  { emoji: '📋', title: '정해둔 것을 그대로 지켜요', label: '정해둔 대로', shift: [0.1, 0.9, 0] },
+  { emoji: '🌤', title: '그날 몸에 맞춰 정해요', label: '그날 몸에 맞춰', shift: [-0.2, -0.8, -0.1] },
+  { emoji: '🏃', title: '움직여야 풀려요', label: '움직여야 풀림', shift: [0.9, 0.2, 0.1] },
+  { emoji: '🛌', title: '충분히 자야 돌아와요', label: '자야 돌아옴', shift: [-0.8, 0.1, -0.3] },
+  { emoji: '🥗', title: '먹는 걸 챙겨야 달라져요', label: '먹는 걸 챙김', shift: [-0.1, 0.5, 0] },
+  { emoji: '👥', title: '누가 함께해야 이어져요', label: '함께해야 이어짐', shift: [0.4, -0.2, 0.9] },
+];
+
+const FIRST_DROP: AxisOption[] = [
+  { title: '잠을 먼저 줄여요', label: '잠을 줄임', shift: [0.4, -0.3, 0] },
+  { title: '끼니를 먼저 건너뛰어요', label: '끼니를 건너뜀', shift: [0.3, -0.2, -0.2] },
+  { title: '운동을 먼저 놓아요', label: '운동을 놓음', shift: [-0.6, -0.2, -0.2] },
+  { title: '사람 만나는 걸 먼저 줄여요', label: '사람을 줄임', shift: [-0.3, 0.3, -0.9] },
+  { title: '쉬는 시간을 먼저 없애요', label: '쉼을 없앰', shift: [0.5, 0.5, 0.1] },
+  { title: '무엇도 줄이지 못해 다 무너져요', label: '다 무너짐', shift: [-0.2, -0.7, 0.2] },
+];
+
+const OUTCOMES: AxisOutcome[] = [
+  {
+    name: '조용한 회복',
+    alt: '느슨한 쉼',
+    tag: '혼자 조용히, 느슨하게 되돌리는 돌봄',
+    anchor: '오늘 삼십 분 일찍 눕기',
+    imprint: canon(-0.6, -0.4, -0.2, -0.6),
+    facets: [
+      { icon: 'coat', name: '몸을 되돌리는 법', chips: ['일찍 눕기', '느린 산책', '따뜻한 물', '아무것도 안 하기'] },
+      { icon: 'box', name: '먹는 것', chips: ['익숙한 것', '따뜻한 국물', '차', '조금씩'] },
+      { icon: 'window', name: '쉬는 자리', chips: ['어두운 방', '이불 속', '창가', '조용한 집'] },
+      { icon: 'chat', name: '무너질 때', chips: ['멈추고 눕기', '연락 미루기', '하루 비우기', '혼자 있기'] },
+    ],
+    variants: ['혼자 조용히', '느슨하게 되돌리며', '잠으로 채우며', '멈추는 쪽으로'],
+  },
+  {
+    name: '함께 쉬는 몸',
+    alt: '느슨한 동행',
+    tag: '누군가와 함께라야 느슨해지는 돌봄',
+    anchor: '오늘 한 사람과 같이 밥을 먹거나 걷기',
+    imprint: canon(-0.3, -0.5, 0, 0.6),
+    facets: [
+      { icon: 'coat', name: '몸을 되돌리는 법', chips: ['같이 걷기', '수다', '함께 먹기', '남의 집에서 쉬기'] },
+      { icon: 'box', name: '먹는 것', chips: ['같이 차린 밥', '나눠 먹는 것', '느긋한 식사', '따뜻한 음료'] },
+      { icon: 'window', name: '쉬는 자리', chips: ['식탁', '거실', '동네 산책길', '카페'] },
+      { icon: 'chat', name: '무너질 때', chips: ['털어놓기', '같이 있어 달라 하기', '도움 청하기', '함께 쉬기'] },
+    ],
+    variants: ['함께 있는 쪽으로', '기대며 되돌리고', '느슨하게 나누며', '사람 쪽으로'],
+  },
+  {
+    name: '정돈된 회복',
+    alt: '규칙적인 쉼',
+    tag: '혼자, 정해둔 규칙으로 몸을 지키는 돌봄',
+    anchor: '잠드는 시각 하나를 이번 주 내내 지키기',
+    imprint: canon(-0.4, 0.6, 0, -0.4),
+    facets: [
+      { icon: 'coat', name: '몸을 되돌리는 법', chips: ['같은 시각 취침', '정해둔 스트레칭', '기록하기', '카페인 끊는 시간'] },
+      { icon: 'box', name: '먹는 것', chips: ['정해둔 끼니', '단순한 식단', '물 챙기기', '같은 아침'] },
+      { icon: 'window', name: '쉬는 자리', chips: ['정돈된 방', '어두운 침실', '같은 산책길', '정해둔 시간대'] },
+      { icon: 'chat', name: '무너질 때', chips: ['최소한만 지키기', '일정 줄이기', '규칙 하나만 남기기', '기록 이어가기'] },
+    ],
+    variants: ['정해둔 대로', '규칙을 지키며', '혼자 단정하게', '흐트러지지 않게'],
+  },
+  {
+    name: '돌보는 약속',
+    alt: '함께 지키는 규칙',
+    tag: '누군가와 약속해 두고 지켜내는 돌봄',
+    anchor: '한 사람과 이번 주 운동이나 산책을 약속하기',
+    imprint: canon(-0.1, 0.6, 0.2, 0.6),
+    facets: [
+      { icon: 'coat', name: '몸을 되돌리는 법', chips: ['같이 하는 운동', '약속한 시간', '서로 확인', '기록 공유'] },
+      { icon: 'box', name: '먹는 것', chips: ['같이 정한 식단', '함께 장보기', '약속한 끼니', '나눠 만든 도시락'] },
+      { icon: 'window', name: '쉬는 자리', chips: ['정해진 체육관', '같은 코스', '함께 가는 병원', '주말 아침'] },
+      { icon: 'chat', name: '무너질 때', chips: ['먼저 알리기', '도움 요청', '약속 조정', '함께 다시 시작'] },
+    ],
+    variants: ['약속으로 지키며', '함께 또렷하게', '서로 확인하며', '밖에서 붙들며'],
+  },
+  {
+    name: '걷는 몸',
+    alt: '가벼운 움직임',
+    tag: '혼자 가볍게 움직여야 풀리는 돌봄',
+    anchor: '오늘 한 정거장 먼저 내려 걷기',
+    imprint: canon(0.5, -0.3, 0, -0.4),
+    facets: [
+      { icon: 'coat', name: '몸을 되돌리는 법', chips: ['오래 걷기', '자전거', '가벼운 요가', '계단'] },
+      { icon: 'box', name: '먹는 것', chips: ['간단하게', '가벼운 것', '물 많이', '움직인 뒤 한 끼'] },
+      { icon: 'window', name: '쉬는 자리', chips: ['동네 길', '강변', '공원', '햇볕 드는 곳'] },
+      { icon: 'chat', name: '무너질 때', chips: ['그래도 걷기', '거리를 줄이기', '느리게', '밖에 나가기'] },
+    ],
+    variants: ['가볍게 움직이며', '혼자 걷는 쪽으로', '느슨한 움직임으로', '몸을 먼저 쓰며'],
+  },
+  {
+    name: '놀이 같은 움직임',
+    alt: '함께 노는 몸',
+    tag: '사람과 놀듯 움직여야 이어지는 돌봄',
+    anchor: '이번 주에 사람과 함께 몸 쓰는 일 하나 잡기',
+    imprint: canon(0.6, -0.3, 0.3, 0.7),
+    facets: [
+      { icon: 'coat', name: '몸을 되돌리는 법', chips: ['구기 운동', '클래스', '같이 등산', '춤'] },
+      { icon: 'box', name: '먹는 것', chips: ['운동 뒤 함께 먹기', '나눠 먹기', '가벼운 음료', '기분 내는 한 끼'] },
+      { icon: 'window', name: '쉬는 자리', chips: ['체육관', '코트', '산', '사람 많은 공원'] },
+      { icon: 'chat', name: '무너질 때', chips: ['같이 가자고 하기', '약한 강도로 함께', '웃으며 넘기기', '다음 약속 잡기'] },
+    ],
+    variants: ['놀듯 움직이며', '함께 웃으며', '사람과 이어가며', '가벼운 쪽으로 크게'],
+  },
+  {
+    name: '쌓아가는 훈련',
+    alt: '단단해지는 몸',
+    tag: '혼자 기록을 쌓아가며 단단해지는 돌봄',
+    anchor: '오늘 한 세트나 한 걸음을 어제보다 늘리기',
+    imprint: canon(0.6, 0.6, -0.2, -0.4),
+    facets: [
+      { icon: 'coat', name: '몸을 되돌리는 법', chips: ['무게 늘리기', '주기 지키기', '기록 남기기', '자세 다듬기'] },
+      { icon: 'box', name: '먹는 것', chips: ['단백질', '정해둔 양', '시간 맞춰', '군더더기 없이'] },
+      { icon: 'window', name: '쉬는 자리', chips: ['같은 체육관', '집의 매트', '이른 아침', '혼자의 시간'] },
+      { icon: 'chat', name: '무너질 때', chips: ['강도를 낮추기', '한 세트만', '기록은 이어가기', '다시 처음부터'] },
+    ],
+    variants: ['쌓아가며', '혼자 단단하게', '기록을 이어가며', '어제보다 조금 더'],
+  },
+  {
+    name: '겨루는 몸',
+    alt: '함께 미는 훈련',
+    tag: '함께 겨루며 한계를 미는 돌봄',
+    anchor: '이번 주 목표 하나를 사람에게 말해두기',
+    imprint: canon(0.8, 0.6, 0.4, 0.8),
+    facets: [
+      { icon: 'coat', name: '몸을 되돌리는 법', chips: ['대회·기록 도전', '함께 훈련', '코치와 함께', '경쟁'] },
+      { icon: 'box', name: '먹는 것', chips: ['계획된 식단', '보충제', '경기 전 루틴', '함께 관리'] },
+      { icon: 'window', name: '쉬는 자리', chips: ['운동장', '팀 훈련장', '대회장', '사람 많은 시간대'] },
+      { icon: 'chat', name: '무너질 때', chips: ['팀에 알리기', '목표 조정', '함께 회복', '다시 등록하기'] },
+    ],
+    variants: ['겨루며 밀고', '함께 또렷하게 크게', '밖에서 붙들며', '한계를 미는 쪽으로'],
+  },
+];
+
+export const healthAxis: AxisDef = {
+  id: 'health',
+  no: '07',
+  name: 'Health',
+  blurb: '몸이 곧 삶이다',
+  brand: 'HEALTH · 몸을 돌보는 중',
+  resultLabel: '돌봄의 결',
+  chipLabels: ['자리', '거기서 하는 일', '순간', '돌보는 방식', '먼저 놓는 것'],
+  param: 'h',
+  storageKey: 'identity-os:health:v1',
+  poles: [
+    { left: '쉼 쪽', right: '움직임 쪽' },
+    { left: '느슨하게', right: '또렷하게' },
+    { left: '혼자', right: '함께' },
+  ],
+  projection: [
+    { from: 'vivid', sign: 1 },
+    { from: 'sharp', sign: 1 },
+    { from: 'outward', sign: 1 },
+  ],
+  openings: OPENINGS,
+  openingProbe: {
+    title: '몸이 가장 크게 말을 거는\n자리는 어디인가요?',
+    sub: '건강 목표가 아니에요. 몸이 이미 보내고 있는 신호를 찾는 거예요.',
+  },
+  childProbe: {
+    title: '그때 당신은\n무엇을 하나요?',
+    sub: '해야 하는 것이 아니라 실제로 하는 것으로.',
+  },
+  probes: [
+    {
+      title: '그 신호가 가장 세게 오는\n순간은요?',
+      sub: '돌봄의 결은 편한 날이 아니라 힘든 날에 드러나요.',
+      skipLabel: '딱히 없어요 — 넘어갈래요',
+      options: 'scoped',
+    },
+    {
+      title: '당신의 몸은\n무엇으로 돌아오나요?',
+      sub: '좋다고들 하는 것이 아니라, 나에게 실제로 듣는 것으로.',
+      skipLabel: '잘 모르겠어요 — 넘어갈래요',
+      options: CARE,
+    },
+    {
+      title: '바빠지면 가장 먼저\n놓는 것은요?',
+      sub: '아픈 물음이에요. 넘어가도 괜찮아요.',
+      skipLabel: '말하고 싶지 않아요 — 넘어갈래요',
+      options: FIRST_DROP,
+    },
+  ],
+  outcomes: OUTCOMES,
+  naming: 'octant',
+  practiceProbe: {
+    title: '돌봄을 이번 주의\n한 가지로',
+    sub: '몸을 바꾸는 게 아니에요. 지켜지는 크기로만.',
+  },
+  practices: ({ name, outcome, state, profile }) => {
+    const life = profile.results.find((r) => r.id === 'lifestyle');
+    const options = [
+      { action: outcome.anchor, caption: '지켜지는 크기가 좋은 크기예요' },
+      {
+        action: state.probes[2]?.label
+          ? `바빠져도 ${state.probes[2].label} 대신 다른 걸 먼저 줄여보기`
+          : '바빠져도 마지막까지 남길 한 가지를 정해두기',
+        caption: '무너지는 순서를 내가 정하기',
+      },
+      {
+        action: `「${name}」${iga(name)} 지켜진 날과 무너진 날을 이번 주에 하나씩 적기`,
+        caption: '판단 없이, 기록만',
+      },
+    ];
+    if (life) {
+      options.push({
+        action: `「${life.name}」의 하루에서 ${outcome.facets[0]?.chips[0] ?? '몸을 돌보는 일'}${eul(outcome.facets[0]?.chips[0] ?? '몸을 돌보는 일')} 넣을 칸 하나 찾기`,
+        caption: '하루에 자리가 없으면 돌봄도 없어요',
+      });
+    }
+    return options;
+  },
+};
