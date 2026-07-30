@@ -82,6 +82,17 @@ export interface AxisOutcome {
   alt: string;
   /** 이름 옆에 붙는 한 줄 */
   tag: string;
+  /**
+   * 이름을 쉬운 말로 풀어 쓴 한 줄 — 이름은 절대 혼자 놓이지 않는다.
+   * 이름이 은유면 뜻은 여기서 전달돼야 한다. 없으면 tag로 물러난다.
+   */
+  summary?: string;
+  /** 나의 문장에 들어가는 절 — 대괄호 없이, 보통 문장으로 */
+  clause?: string;
+  /** 이 방식이 잘 통하는 자리 */
+  fits?: string[];
+  /** 이 방식이 나를 힘들게 하는 자리 — 가이드북을 펼쳐본 사람에게만 보인다 */
+  strains?: string[];
   /** 이번 주의 한 가지가 걸리는 닻 */
   anchor: string;
   /** 이 결과가 뒤 축에 남기는 각인 */
@@ -99,6 +110,11 @@ export interface AxisOutcome {
 export interface NamedOutcome {
   name: string;
   tag: string;
+  /** 이름을 쉬운 말로 풀어 쓴 한 줄 */
+  summary: string;
+  clause: string;
+  fits: string[];
+  strains: string[];
   anchor: string;
   imprint: Canon;
   facets: AxisFacet[];
@@ -129,6 +145,10 @@ export interface AxisResult {
   /** 확정된 이름 */
   name: string;
   tag: string;
+  /** 이름을 쉬운 말로 풀어 쓴 한 줄 */
+  summary: string;
+  /** 나의 문장에 들어가는 절 */
+  clause: string;
   anchor: string;
   /** 입구의 축약 표현 — 인용에 쓰인다 */
   short: string;

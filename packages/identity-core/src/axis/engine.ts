@@ -1,6 +1,6 @@
 import { addCanon, project, scaleCanon, sumCanon, ZERO } from './canon';
 import type { Canon } from './canon';
-import { eul, iga, ieyo } from '../josa';
+import { eul, gwa, iga, ieyo } from '../josa';
 import type {
   AxisDef,
   AxisOption,
@@ -199,6 +199,11 @@ function namedOutcome(
   return {
     name,
     tag: own?.tag ?? outcome.tag,
+    // 이름이 은유일 수 있으므로 뜻은 언제나 쉬운 한 줄로 함께 간다
+    summary: own?.tag ?? outcome.summary ?? outcome.tag,
+    clause: own?.tag ?? outcome.clause ?? outcome.summary ?? outcome.tag,
+    fits: outcome.fits ?? [],
+    strains: outcome.strains ?? [],
     anchor: own?.anchor ?? outcome.anchor,
     imprint: own?.imprint ?? outcome.imprint,
     facets: outcome.facets,
@@ -377,10 +382,10 @@ function defaultCoachLines(
   const root = rootCite(args.profile);
   return [
     root
-      ? `${root.resultLabel} 「${root.name}」${eul(root.name)} 아는 사람의 결이라면,`
+      ? `앞서 고른 ${root.resultLabel} 「${root.name}」${gwa(root.name)} 함께 보면,`
       : '고른 것들을 모아보니,',
-    `「${args.proposed}」에 가까울 것 같아요.`,
-    `그중에서도 ${args.tilt} 쪽으로 기울어 있고요.`,
+    `「${args.proposed}」에 가까운 것 같아요.`,
+    `${args.tilt} 쪽에 조금 더 가까웠어요.`,
     '맞나요?',
   ];
 }
@@ -510,7 +515,10 @@ export function axisInsights(
 }
 
 /**
- * 가이드북 한 줄 — 이름 · 결 · 가장 크게 기운 축.
+ * 가이드북 한 줄 — 이름과, 그 이름을 풀어 쓴 한 줄.
+ *
+ * 한때 여기에 변주와 가장 크게 기운 극을 중점으로 이어 붙였는데,
+ * 세 겹의 추상이 되어 읽는 사람에게 수수께끼가 됐다. 한 줄은 한 뜻만 갖는다.
  * 명명 전이면 빈 문자열이라, 호출부가 '열림' 상태를 그대로 쓴다.
  */
 export function axisNote(
@@ -519,9 +527,7 @@ export function axisNote(
   profile: Profile,
 ): string {
   if (!state.outcome || !state.name) return '';
-  const tilt = dominantTilt(axisCoords(def, state, profile));
-  const { tag, variant } = state.outcome;
-  return `「${state.name}」 — ${tag}${variant ? ` · ${variant}` : ''} · ${tilt} 쪽으로`;
+  return `「${state.name}」 — ${state.outcome.summary}`;
 }
 
 /** 이 축이 뒤 축에 넘겨주는 것 — 확정된 이름과 각인 하나 */
@@ -537,6 +543,8 @@ export function axisResult(
     resultLabel: def.resultLabel,
     name: state.name,
     tag: state.outcome.tag,
+    summary: state.outcome.summary,
+    clause: state.outcome.clause,
     anchor: state.practice?.action ?? state.outcome.anchor,
     short: state.opening.short,
     imprint: state.outcome.imprint,

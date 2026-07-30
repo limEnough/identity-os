@@ -37,12 +37,47 @@ export function OutcomeCard({
     <>
       <div className="text-center">
         <p className="text-[18px] font-semibold">「{outcome.name}」</p>
-        <p className="mt-1.5 text-support text-sub">{outcome.tag}</p>
+        {/* 이름은 혼자 놓이지 않는다 — 뜻은 언제나 쉬운 한 줄이 전한다 */}
+        <p className="mt-1.5 text-support text-sub">{outcome.summary}</p>
         {outcome.variant && (
           <p className="mt-1 text-caption text-chip">{outcome.variant}</p>
         )}
         {coords.length > 0 && <AxisBars axes={coords} className="mt-6.5" />}
       </div>
+
+      {/**
+       * 잘 통하는 자리와 나를 힘들게 하는 자리.
+       * 걷는 중에는 보여주지 않는다 — 자기 통보는 본인이 열어봤을 때만 안전하므로,
+       * 가이드북의 쪽지를 펼쳐본 사람에게만 놓인다.
+       */}
+      {(outcome.fits.length > 0 || outcome.strains.length > 0) && (
+        <div className="mt-8.5 grid gap-3">
+          {outcome.fits.length > 0 && (
+            <div className={cn(surface, "rounded-tile px-5 py-4.5")}>
+              <p className="mb-2.5 text-body font-semibold">
+                이런 자리에서 잘 통해요
+              </p>
+              <ul className="grid gap-1.5 text-support text-sub">
+                {outcome.fits.map((line) => (
+                  <li key={line}>· {line}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {outcome.strains.length > 0 && (
+            <div className={cn(surface, "rounded-tile px-5 py-4.5")}>
+              <p className="mb-2.5 text-body font-semibold">
+                이런 자리에서는 힘들어져요
+              </p>
+              <ul className="grid gap-1.5 text-support text-sub">
+                {outcome.strains.map((line) => (
+                  <li key={line}>· {line}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
 
       {showFacets && outcome.facets.length > 0 && (
         <div className="mt-8.5 grid gap-3">

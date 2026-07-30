@@ -305,7 +305,27 @@ describe('앞 축이 뒤 축에 미치는 영향', () => {
     expect(axisNote(tasteAxis, replayAxis(tasteAxis, [0, 1, 0, 0, 0], profile).state, profile)).toBe('');
     const noted = axisNote(tasteAxis, replayAxis(tasteAxis, [0, 1, 0, 0, 0, 0], profile).state, profile);
     expect(noted).toContain('「');
-    expect(noted).toContain('쪽으로');
+  });
+
+  it('가이드북 한 줄은 이름과 쉬운 설명 하나로만 이뤄진다', () => {
+    // 한때 변주와 기운 극을 중점으로 이어 붙였다 — 세 겹의 추상이 수수께끼가 됐다.
+    // 한 줄은 한 뜻만 갖는다: 「이름」 — 풀어 쓴 한 줄.
+    AXES.forEach((def, i) => {
+      const profile = profileUpTo(i);
+      const state = replayAxis(def, [0, 0, 0, 0, 0, 0], profile).state;
+      const noted = axisNote(def, state, profile);
+      expect(noted, def.id).toBe(`「${state.name}」 — ${state.outcome?.summary}`);
+      expect(noted.split(' · '), def.id).toHaveLength(1);
+    });
+  });
+
+  it('이름 옆에는 언제나 쉬운 한 줄이 함께 온다', () => {
+    AXES.forEach((def, i) => {
+      const profile = profileUpTo(i);
+      const outcome = replayAxis(def, [0, 0, 0, 0, 0, 0], profile).state.outcome;
+      expect(outcome?.summary, def.id).toBeTruthy();
+      expect(outcome?.clause, def.id).toBeTruthy();
+    });
   });
 });
 
@@ -318,12 +338,22 @@ describe('나의 문장', () => {
     expect(all.at(-1)).toContain('그래서 나는,');
   });
 
-  it('무드가 정해지면 가치를 부르던 줄을 무드 줄이 이어받는다', () => {
+  it('축을 지나면 그 축의 줄이 문장에 하나 붙는다', () => {
     const beforeStyle = buildStatement(profileUpTo(5));
     const afterStyle = buildStatement(profileUpTo(6));
-    expect(beforeStyle.join('')).toContain('그 동경의 이름은');
-    expect(afterStyle.join('')).not.toContain('그 동경의 이름은');
-    expect(afterStyle.join('')).toContain('무드에 끌렸는지도');
+    expect(afterStyle).toHaveLength(beforeStyle.length + 1);
+    expect(afterStyle.at(0)).toBe(beforeStyle.at(0));
+    expect(afterStyle.at(-1)).toBe(beforeStyle.at(-1));
+  });
+
+  it('문장에서 대괄호로 이름을 부르는 자리는 가치 한 줄뿐이다', () => {
+    // 대괄호 이름을 여덟 개 이어 붙이면 문장이 아니라 암호가 된다.
+    // 손글씨로 읽히는 자리이므로, 나머지 축은 풀어 쓴 말로만 실린다.
+    const lines = buildStatement(profileUpTo(8));
+    const named = lines.filter((line) => line.includes('「'));
+    expect(named).toHaveLength(1);
+    expect(named[0]).toContain('그 마음의 이름은');
+    for (const line of lines) expect(line.endsWith('.')).toBe(true);
   });
 
   it('아무것도 걷지 않았으면 빈 문장이다', () => {
