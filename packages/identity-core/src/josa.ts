@@ -5,5 +5,6 @@ export function hasBatchim(word: string): boolean {
 }
 
 export const eul = (w: string) => (hasBatchim(w) ? '을' : '를');
+export const gwa = (w: string) => (hasBatchim(w) ? '과' : '와');
 export const iga = (w: string) => (hasBatchim(w) ? '이' : '가');
 export const ieyo = (w: string) => (hasBatchim(w) ? '이에요' : '예요');

@@ -17,11 +17,20 @@ export {
   buildStatement,
 } from './engine';
 export type { IdentityState, IdentityReplayOutcome, IdentityStep, StepOption } from './engine';
-export { SCENE, LIGHT, DISTANCE, MOODS, buildExpressions } from './style-data';
+export {
+  SCENE,
+  LIGHT,
+  COLOR,
+  DISTANCE,
+  MOODS,
+  VALUE_LEAN,
+  buildExpressions,
+} from './style-data';
 export type {
   SceneOption,
   TextureOption,
   LightOption,
+  ColorOption,
   DistanceOption,
   Mood,
   MoodCategory,
@@ -35,11 +44,12 @@ export {
   currentStyleStep,
   styleAxes,
   resolveMood,
+  neighborMood,
   styleInsights,
   buildStyleNote,
 } from './style-engine';
 export type { StyleState, StyleReplayOutcome, StyleStep, StyleAxis } from './style-engine';
-export { hasBatchim, eul, iga, ieyo } from './josa';
+export { hasBatchim, eul, gwa, iga, ieyo } from './josa';
 export { encodeSeq, decodeSeq } from './seq';
 export { createLocalStore, STORAGE_KEY, STYLE_STORAGE_KEY } from './progress-store';
 export type { ProgressStore } from './progress-store';
