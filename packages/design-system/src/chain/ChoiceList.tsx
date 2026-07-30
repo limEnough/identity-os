@@ -3,7 +3,7 @@ import { quoteBar, surface, surfaceLift } from "../recipes";
 import type { ChainOptionView } from "./types";
 
 /**
- * 갈림길의 선택지들 — 한 화면에 셋 또는 넷.
+ * 갈림길의 선택지들 — 앞선 걸음일수록 갈래가 많고(예닐곱), 뒤로 갈수록 줄어든다.
  *
  * @param quoted 실천·표현처럼 '내가 하기로 한 것'을 고르는 걸음이면 왼쪽 인용 막대로 묶는다
  */

@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   buildStatement,
+  buildStyleNote,
   decodeSeq,
   encodeSeq,
   eul,
@@ -60,7 +61,12 @@ function GuideRoute() {
     () => replayIdentity(decodeSeq(identitySeq)),
     [identitySeq],
   );
-  const style = useMemo(() => replayStyle(decodeSeq(styleSeq)), [styleSeq]);
+  // 무드 발자국은 가치 없이 되짚을 수 없다 — 좌표의 출발점이 거기서 나오므로
+  const identityValue = identity.state.value ?? "";
+  const style = useMemo(
+    () => replayStyle(decodeSeq(styleSeq), identityValue),
+    [styleSeq, identityValue],
+  );
 
   /**
    * 주소에 무드 발자국이 없어도 기억에 남아 있으면 되살린다.
@@ -80,7 +86,7 @@ function GuideRoute() {
   if (redirecting) return null;
 
   const state = identity.state;
-  const value = state.value ?? "";
+  const value = identityValue;
   const styleState = style.state;
   // 무드는 명명까지 끝나야 가이드북에 오른다 — 표현 단계는 실천 카드에만 쓰인다
   const mood = style.valid && styleState.mood ? styleState.mood : null;
@@ -116,7 +122,7 @@ function GuideRoute() {
           no: "06",
           name: "Style",
           tone: "filled" as const,
-          body: `「${moodName}」 — ${mood.tag}`,
+          body: buildStyleNote(styleState, value),
         }
       : {
           no: "06",
@@ -164,7 +170,7 @@ function GuideRoute() {
           <MoodCard
             mood={mood}
             moodName={moodName}
-            axes={styleAxes(styleState)}
+            axes={styleAxes(styleState, value)}
           />
           {styleState.expression && (
             <NoteAside

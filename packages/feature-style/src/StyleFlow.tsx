@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import {
   currentStyleStep,
   replayStyle,
@@ -11,13 +12,16 @@ import {
 import { AxisBars, ChainScreen, useChainSeq } from "@identity-os/design-system";
 
 export interface StyleFlowProps {
-  /** Identity에서 확정된 핵심 가치 — 질문의 말끝을 그 사람의 언어로 맞춘다 */
+  /**
+   * Identity에서 확정된 핵심 가치 — 이 축의 모든 것이 이 위에 얹힌다.
+   * 좌표의 출발점을 기울이고, 질문의 말끝과 코치의 발화를 그 사람의 언어로 맞춘다.
+   */
   value: string;
   /** 복원할 무드 체인 시퀀스 */
   initialSeq: number[];
   /** 한 걸음마다 호출 — 앱이 라우트(URL)에 기록한다 */
   onSeqChange: (seq: number[]) => void;
-  /** 6단계 완주 시 호출 */
+  /** 7단계 완주 시 호출 */
   onComplete: (seq: number[]) => void;
 }
 
@@ -35,9 +39,12 @@ export function StyleFlow({
   onSeqChange,
   onComplete,
 }: StyleFlowProps) {
+  // 리플레이가 가치를 물고 간다 — 같은 발자국이라도 뿌리가 다르면 다른 무드에 닿는다
+  const replay = useCallback((seq: number[]) => replayStyle(seq, value), [value]);
+
   const { outcome, choose } = useChainSeq({
     initialSeq,
-    replay: replayStyle,
+    replay,
     onSeqChange,
     onComplete,
   });
@@ -51,9 +58,11 @@ export function StyleFlow({
       step={step}
       totalSteps={STYLE_STEPS}
       stepIndex={outcome.state.stepIndex}
-      insights={styleInsights(outcome.state)}
+      insights={styleInsights(outcome.state, value)}
       quoted={step.kind === "expression"}
-      aside={<AxisBars axes={styleAxes(outcome.state)} className="mt-6.5" />}
+      aside={
+        <AxisBars axes={styleAxes(outcome.state, value)} className="mt-6.5" />
+      }
       onChoose={choose}
       onSkip={() => choose(SKIP)}
     />

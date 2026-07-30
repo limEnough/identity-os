@@ -48,20 +48,22 @@ export function loadResume(): Resume | null {
   if (identity.length === 0) return null;
 
   const i = encodeSeq(identity);
-  if (!replayIdentity(identity).done) {
+  const identityOutcome = replayIdentity(identity);
+  if (!identityOutcome.done) {
     return { steps: identity.length, href: `/identity?i=${i}` };
   }
 
   // Identity를 완주했을 때만 무드 발자국이 있을 수 있다 (불변식: Identity → Style)
-  const style = healed(styleStore().load(), replayStyle);
+  // 그 발자국은 확정된 가치 위에서만 되짚힌다 — 무드 좌표가 거기서 출발하므로
+  const value = identityOutcome.state.value ?? "";
+  const replay = (seq: number[]) => replayStyle(seq, value);
+  const style = healed(styleStore().load(), replay);
   const steps = identity.length + style.length;
   if (style.length === 0) return { steps, href: `/guide?i=${i}` };
 
   const s = encodeSeq(style);
   return {
     steps,
-    href: replayStyle(style).done
-      ? `/guide?i=${i}&s=${s}`
-      : `/style?i=${i}&s=${s}`,
+    href: replay(style).done ? `/guide?i=${i}&s=${s}` : `/style?i=${i}&s=${s}`,
   };
 }

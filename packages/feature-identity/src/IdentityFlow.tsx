@@ -14,7 +14,7 @@ export interface IdentityFlowProps {
   initialSeq: number[];
   /** 한 걸음마다 호출 — 앱이 라우트(URL)에 기록한다 */
   onSeqChange: (seq: number[]) => void;
-  /** 6단계 완주 시 호출 */
+  /** 7단계 완주 시 호출 */
   onComplete: (seq: number[]) => void;
 }
 
