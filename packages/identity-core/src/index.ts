@@ -1,5 +1,13 @@
-export { ENVY, WHY, ORIGIN, DIRECTION, buildPractices } from './data';
-export type { EnvyType, EnvyAspect, WhyOption, OriginOption, PracticeOption } from './data';
+export { ENVY, WHY, ORIGIN, DIRECTION, RITUAL, buildPractices } from './data';
+export type {
+  EnvyType,
+  EnvyAspect,
+  MomentOption,
+  WhyOption,
+  OriginOption,
+  PracticeContext,
+  PracticeOption,
+} from './data';
 export {
   SKIP,
   IDENTITY_STEPS,
