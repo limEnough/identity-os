@@ -1,0 +1,20 @@
+{
+  "name": "@identity-os/design-system",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Identity OS 디자인 토큰·공용 컴포넌트 — Tailwind 토큰(styles.css)·오브·오로라·플로팅 CTA·여정 골격, 피처 간 시각 일관성의 단일 출처",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles.css"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "tailwindcss": ">=4"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}

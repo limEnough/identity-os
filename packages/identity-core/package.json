@@ -1,0 +1,19 @@
+{
+  "name": "@identity-os/identity-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Identity OS 도메인 두뇌 — Why 체인 트리·리플레이 엔진·나의 문장 빌더 (프레임워크 무의존 순수 TS)",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  }
+}

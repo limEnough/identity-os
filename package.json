@@ -1,0 +1,16 @@
+{
+  "name": "identity-os",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Identity OS — 문득 묻습니다, 나는 어떤 사람인가요?",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @identity-os/web",
+    "build": "npm run build -w @identity-os/web",
+    "start": "npm run start -w @identity-os/web",
+    "test": "npm run test -w @identity-os/identity-core"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  // Tailwind v4의 @theme·@source·@utility·@custom-variant는 표준 CSS가 아니라
+  // 편집기 기본 린터가 모른다. 검사는 Tailwind 확장에 맡긴다.
+  "css.lint.unknownAtRules": "ignore",
+  "files.associations": {
+    "*.css": "tailwindcss"
+  }
+}
