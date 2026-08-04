@@ -183,6 +183,33 @@ describe('좌표와 결과', () => {
     }
   });
 
+  it('좌표를 쓰는 축은 쉬운 한 줄과 절을 결과마다 직접 적는다', () => {
+    // 엔진이 summary·clause를 tag로 폴백하므로, 안 적어도 화면은 조용히 굴러간다.
+    // 그래서 여기서 폴백을 금지한다 — tag는 결의 요약이지 사람에게 건네는 말이 아니다.
+    for (const def of AXES.filter((a) => a.naming === 'octant')) {
+      for (const outcome of def.outcomes) {
+        const at = `${def.id}/${outcome.name}`;
+        expect(outcome.summary, at).toBeTruthy();
+        expect(outcome.summary, at).not.toBe(outcome.tag);
+        expect(outcome.clause, at).toBeTruthy();
+        expect(outcome.clause, at).not.toBe(outcome.tag);
+        // 절은 나의 문장에 그대로 실린다 — 명사구가 아니라 서술문이어야 한다
+        expect(outcome.clause?.endsWith('다'), at).toBe(true);
+      }
+    }
+  });
+
+  it('모든 축의 결과는 잘 통하는 자리와 힘든 자리를 셋씩 갖는다', () => {
+    // 칭찬만 하는 거울은 아무것도 가르쳐주지 않는다 — 여덟 축 모두에서 양쪽을 적는다
+    for (const def of AXES) {
+      for (const outcome of def.outcomes) {
+        const at = `${def.id}/${outcome.name}`;
+        expect(outcome.fits, at).toHaveLength(3);
+        expect(outcome.strains, at).toHaveLength(3);
+      }
+    }
+  });
+
   it('명명은 제안·다른 결·이웃·유보를 내민다', () => {
     const before = replayAxis(styleAxis, [0, 0, 0, 0, 0], emptyProfile()).state;
     const proposed = resolveOutcome(styleAxis, before, emptyProfile());
@@ -354,6 +381,15 @@ describe('나의 문장', () => {
     expect(named).toHaveLength(1);
     expect(named[0]).toContain('그 마음의 이름은');
     for (const line of lines) expect(line.endsWith('.')).toBe(true);
+  });
+
+  it('이름을 부르는 줄 말고는 전부 서술문이다', () => {
+    // 축의 clause가 비어 tag로 폴백하면 "…하는 관계." 같은 명사구가 손글씨에 실린다.
+    // 나의 문장은 결과 목록이 아니라 읽히는 글이므로, 모든 줄이 문장으로 끝나야 한다.
+    for (const line of buildStatement(profileUpTo(8))) {
+      if (line.includes('「')) continue;
+      expect(line.endsWith('다.'), line).toBe(true);
+    }
   });
 
   it('아무것도 걷지 않았으면 빈 문장이다', () => {
