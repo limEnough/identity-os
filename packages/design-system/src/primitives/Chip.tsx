@@ -7,9 +7,17 @@ export function Chip({ children }: { children: ReactNode }) {
   return <span className={chipBase}>{children}</span>;
 }
 
-/** 알약 여러 개가 흐르는 자리 */
-export function ChipRow({ children }: { children: ReactNode }) {
-  return <div className="flex flex-wrap gap-1.75">{children}</div>;
+/** 알약 여러 개가 흐르는 자리 — 여백은 놓는 자리가 정한다 */
+export function ChipRow({
+  className,
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className={cn("flex flex-wrap gap-1.75", className)}>{children}</div>
+  );
 }
 
 /**

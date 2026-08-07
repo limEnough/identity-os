@@ -13,6 +13,7 @@ export { FloatingCta } from "./layout/FloatingCta";
 /* 낱개 */
 export { Button, SkipLink } from "./primitives/Button";
 export { Chip, ChipRow, InsightChips } from "./primitives/Chip";
+export { CopyButton } from "./primitives/CopyButton";
 export { Modal, ModalActions } from "./primitives/Modal";
 export {
   Brand,
@@ -27,6 +28,10 @@ export {
 /* 코치 */
 export { Orb, OrbStage } from "./orb/Orb";
 export { Bubble, CoachBubble } from "./orb/Coach";
+
+/* 나의 네 글자 */
+export { CodeMark } from "./code/CodeMark";
+export type { CodeSlot } from "./code/CodeMark";
 
 /* 여정의 공통 골격 — Identity·Style이 함께 쓴다 */
 export { ChainScreen } from "./chain/ChainScreen";
