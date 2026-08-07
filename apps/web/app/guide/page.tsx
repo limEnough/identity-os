@@ -1,26 +1,38 @@
 "use client";
 
-import { Suspense, useEffect, useMemo } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   AXES,
+  appendEntry,
   axisCoords,
   axisHref,
   axisNote,
+  buildCode,
   buildStatement,
+  daysToSeason,
   eul,
   footprintsFromQuery,
+  giftReady,
   journeyQuery,
+  livingShift,
+  pickGift,
+  resolveShelf,
+  sealRun,
+  seasonReady,
   walkJourney,
 } from "@identity-os/identity-core";
 import type {
   AxisDef,
+  ChronicleEntry,
   Footprints,
   JourneyStep,
+  ShelfItem,
 } from "@identity-os/identity-core";
 import {
   Brand,
   Button,
+  CodeMark,
   Desc,
   FloatingCta,
   Heading,
@@ -34,8 +46,20 @@ import {
 } from "@identity-os/design-system";
 import { OutcomeCard } from "@identity-os/feature-axis";
 import { forgetAll, forgetFrom, loadFootprints } from "../_lib/progress";
+import {
+  loadChronicle,
+  loadShelf,
+  saveChronicle,
+  saveShelf,
+} from "../_lib/keepsake";
 import { GuideSections, type GuideSection } from "./GuideSections";
 import { NoteAside, NoteShelf, type GuideNote } from "./GuideNotes";
+import {
+  ChronicleNote,
+  CodeNote,
+  PlayLinks,
+  ShelfNote,
+} from "./GuideKeepsakes";
 
 /**
  * My Life Guide — /guide?i=…&m=…&c=…&l=…&t=…&s=…&h=…&k=…
@@ -67,8 +91,59 @@ function GuideRoute() {
     }
   }, [fromUrl, router]);
 
+  /**
+   * 간직되는 것들은 마운트 뒤에 읽는다 — 첫 그림은 서버에서 그려지므로
+   * 브라우저의 기억을 그때 꺼내면 두 그림이 어긋난다.
+   */
+  const [shelf, setShelf] = useState<ShelfItem[]>([]);
+  const [chronicle, setChronicle] = useState<ChronicleEntry[]>([]);
+  const [now, setNow] = useState<number | null>(null);
+
+  useEffect(() => {
+    setShelf(loadShelf());
+    setChronicle(loadChronicle());
+    setNow(Date.now());
+  }, []);
+
   const identity = journey.steps[0];
   const rooted = identity.status === "done";
+  const code = useMemo(() => buildCode(journey.profile), [journey.profile]);
+
+  /**
+   * 여덟 축을 다 걸은 판은 연표에 봉인된다 — 같은 발자국은 한 번만.
+   * 봉인은 발자국을 지우지 않는다: 지금 판의 가이드북은 그대로 남고,
+   * 새 판은 사용자가 계절이 지난 뒤 직접 시작한다.
+   */
+  useEffect(() => {
+    if (now === null || !code.sealed) return;
+    const entry = sealRun(journey.profile, journeyQuery(fromUrl), now);
+    if (!entry) return;
+    setChronicle((entries) => {
+      const next = appendEntry(entries, entry);
+      if (next !== entries) saveChronicle(next);
+      return next;
+    });
+  }, [now, code.sealed, journey.profile, fromUrl]);
+
+  const gift = useMemo(
+    () => pickGift(journey.profile, shelf),
+    [journey.profile, shelf],
+  );
+  const canTake = now !== null && giftReady(shelf, now);
+
+  const takeGift = useCallback(() => {
+    if (!gift || now === null) return;
+    const next: ShelfItem[] = [
+      ...shelf,
+      {
+        passageId: gift.passage.id,
+        trackId: gift.track.id,
+        at: new Date(now).toISOString(),
+      },
+    ];
+    setShelf(next);
+    saveShelf(next);
+  }, [gift, now, shelf]);
 
   // 뿌리가 없으면 가이드북도 없다 (불변식: Identity 먼저)
   useEffect(() => {
@@ -153,7 +228,58 @@ function GuideRoute() {
         </>
       ),
     },
+    {
+      key: "code",
+      label: "나의 네 글자",
+      hint: code.sealed
+        ? `${code.mark} · 「${code.name}」`
+        : `${code.mark} · ${code.settledCount}자리 또렷해요`,
+      body: (
+        <>
+          <CodeNote code={code} />
+          <PlayLinks
+            onMap={() => router.push(`/codes?me=${code.key}`)}
+            onTogether={() => router.push(`/together?me=${code.key}`)}
+          />
+        </>
+      ),
+    },
+    {
+      key: "shelf",
+      label: "결 서재",
+      hint:
+        shelf.length > 0
+          ? `${shelf.length}칸${canTake ? " · 오늘 하나 더" : ""}`
+          : "첫 꾸러미가 기다려요",
+      body: (
+        <ShelfNote
+          gift={gift}
+          shelf={resolveShelf(shelf)}
+          ready={canTake}
+          onTake={takeGift}
+        />
+      ),
+    },
   ];
+
+  // 연표는 봉인된 판이 하나라도 있을 때만 — 빈 연표는 알려줄 것이 없다
+  if (chronicle.length > 0 && now !== null) {
+    notes.push({
+      key: "chronicle",
+      label: "결 연표",
+      hint: `${chronicle.length}판${seasonReady(chronicle, now) ? " · 다음 판이 열렸어요" : ""}`,
+      body: (
+        <ChronicleNote
+          entries={chronicle}
+          code={code}
+          living={livingShift(chronicle, code)}
+          seasonOpen={seasonReady(chronicle, now)}
+          daysLeft={daysToSeason(chronicle, now)}
+          onNewRun={restart}
+        />
+      ),
+    });
+  }
 
   for (const step of journey.steps) {
     const { def, status, replay, profile, editable } = step;
@@ -201,6 +327,25 @@ function GuideRoute() {
           ? `여덟 축 중 ${journey.profile.results.length}개를 걸었어요. 다음은 ${front.name}.`
           : "여덟 축을 모두 걸었어요. 이제 고쳐 쓰는 일이 남았어요."}
       </Desc>
+
+      {/**
+       * 네 글자는 쪽지를 펼치지 않아도 보인다 — 축 하나를 끝내고 돌아왔을 때
+       * 무엇이 늘었는지가 여기서 바로 읽혀야 하므로. 자세한 건 쪽지에서.
+       */}
+      <CodeMark
+        className="mt-8.5"
+        slots={code.letters.map((letter) => ({
+          glyph: code.sealed || letter.settled ? letter.letter : "·",
+          settled: code.sealed || letter.settled,
+        }))}
+      />
+      <Note className="mt-3.5">
+        {code.sealed
+          ? `「${code.name}」 — ${code.summary}`
+          : code.settledCount === 0
+            ? "네 글자가 아직 비어 있어요. 걸을수록 한 자리씩 채워져요."
+            : `네 글자 중 ${code.settledCount}자리가 또렷해졌어요.`}
+      </Note>
 
       <NoteShelf notes={notes} />
       <GuideSections sections={journey.steps.map(sectionOf)} />
