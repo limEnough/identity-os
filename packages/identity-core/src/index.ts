@@ -85,6 +85,38 @@ export {
 } from './axis/code';
 export type { Code, CodeAxis, CodeLetter, CodeName, CodePole } from './axis/code';
 
+/* 결 서재 — 한 구절과 그것이 온 곳, 그리고 노래 하나 */
+export { PASSAGES } from './shelf/passages';
+export type { Passage } from './shelf/passages';
+export { TRACKS } from './shelf/tracks';
+export type { Track } from './shelf/tracks';
+export {
+  SHELF_CAPACITY,
+  giftReady,
+  pickGift,
+  resolveShelf,
+  shelfCanon,
+} from './shelf/shelf';
+export type { Gift, ShelfItem } from './shelf/shelf';
+
+/* 결 연표 — 네 글자에 날짜가 붙는 곳 */
+export {
+  SEASON_DAYS,
+  appendEntry,
+  codeShifts,
+  daysBetween,
+  daysToSeason,
+  livingShift,
+  sealRun,
+  seasonReady,
+  shiftNote,
+} from './chronicle';
+export type { ChronicleEntry, CodeShift } from './chronicle';
+
+/* 겹쳐보기 — 점수 없이, 질문 하나 */
+export { overlayCodes } from './together';
+export type { Overlay, PartedFacet, SharedFacet } from './together';
+
 /* 결 벡터 */
 export { canon, addCanon, scaleCanon, sumCanon, project, ZERO, CANON_KEYS } from './axis/canon';
 export type { Canon, PoleProjection } from './axis/canon';
