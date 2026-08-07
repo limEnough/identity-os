@@ -65,8 +65,28 @@ export type {
 /* 나의 문장 */
 export { buildStatement } from './axis/statement';
 
+/* 나의 네 글자 — 여덟 축을 가로지르는 결을 네 글자로 */
+export {
+  AXIS_COUNT,
+  CENTER,
+  CODE_AXES,
+  CODE_KEYS,
+  CODE_NAMES,
+  FAINT,
+  SETTLE,
+  buildCode,
+  codeCanon,
+  codeCoords,
+  codeName,
+  codePoles,
+  codeSigns,
+  flipCode,
+  isCodeKey,
+} from './axis/code';
+export type { Code, CodeAxis, CodeLetter, CodeName, CodePole } from './axis/code';
+
 /* 결 벡터 */
-export { canon, addCanon, scaleCanon, sumCanon, project, ZERO } from './axis/canon';
+export { canon, addCanon, scaleCanon, sumCanon, project, ZERO, CANON_KEYS } from './axis/canon';
 export type { Canon, PoleProjection } from './axis/canon';
 
 /* 타입 */
