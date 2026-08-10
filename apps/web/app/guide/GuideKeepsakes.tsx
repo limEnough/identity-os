@@ -11,32 +11,74 @@ import {
   Note,
   Overline,
   quoteBar,
+  Serif,
   SkipLink,
   surface,
 } from "@identity-os/design-system";
-import {
-  codeCoords,
-  codeName,
-  flipCode,
-  SHELF_CAPACITY,
-  shiftNote,
-} from "@identity-os/identity-core";
-import type {
-  ChronicleEntry,
-  Code,
-  Gift,
-  ShelfItem,
-} from "@identity-os/identity-core";
+import { codeCoords, codeName, flipCode, shiftNote } from "@identity-os/identity-core";
+import type { ChronicleEntry, Closing, Code } from "@identity-os/identity-core";
 
 /**
- * 간직되는 것들 — 네 글자 · 결 서재 · 결 연표.
+ * 여정 전체에서 나오는 것들 — 네 글자 · 맺음 · 결 연표.
  *
  * 셋 다 축 하나의 결과가 아니라 **여정 전체**에서 나온다. 그래서 축의 쪽지들보다 앞에
- * 놓이고, 판을 새로 걸어도(발자국이 지워져도) 서재와 연표는 남는다.
+ * 놓인다. 다만 수명은 다르다: 네 글자와 맺음은 지금 판의 발자국에서 매번 다시
+ * 계산되고, 연표만 판이 바뀌어도 남는다.
  */
 
 /* ── 나의 네 글자 ── */
 
+/**
+ * 화면에 늘 놓이는 한 상자 — 표식과 이름, 그리고 더보기.
+ *
+ * 축 하나를 끝내고 돌아왔을 때 무엇이 늘었는지는 여기서 바로 읽혀야 하므로
+ * 접어두지 않는다. 다만 상자 안에 다 펼치면 그것만으로 화면이 가득 차므로,
+ * 근거(축 막대·네 갈래·어디서 왔나요)는 더보기 뒤에 둔다.
+ */
+export function CodeBox({ code, onMore }: { code: Code; onMore: () => void }) {
+  return (
+    <div className={cn(surface, "mt-8.5 rounded-card px-5.5 pt-6 pb-2")}>
+      <Overline tight className="mb-5 text-center">
+        나의 네 글자
+      </Overline>
+
+      <CodeMark
+        slots={code.letters.map((letter) => ({
+          glyph: code.sealed || letter.settled ? letter.letter : "·",
+          settled: code.sealed || letter.settled,
+        }))}
+      />
+
+      {/* 이름은 봉인된 뒤에만 불린다 — 아직 얻지 않은 이름을 선언하지 않는다 */}
+      {code.sealed ? (
+        <>
+          <p className="mt-5.5 text-center text-[18px] font-semibold">
+            「{code.name}」
+          </p>
+          <p className="mt-1.5 text-center text-support text-sub">
+            {code.summary}
+          </p>
+        </>
+      ) : (
+        <p className="mt-5.5 text-center text-support text-sub">
+          {code.settledCount === 0
+            ? "네 글자가 아직 비어 있어요. 걸을수록 한 자리씩 채워져요."
+            : `네 글자 중 ${code.settledCount}자리가 또렷해졌어요.`}
+        </p>
+      )}
+
+      <button
+        type="button"
+        className="mt-5.5 w-full cursor-pointer border-t border-line pt-4 pb-3 text-caption font-semibold text-chip transition-colors hover:text-accent"
+        onClick={onMore}
+      >
+        더보기
+      </button>
+    </div>
+  );
+}
+
+/** 더보기 안의 상세 — 네 갈래의 근거와 어디서 왔는지 */
 export function CodeNote({ code }: { code: Code }) {
   // 가장 아슬아슬했던 갈래를 뒤집은 옆칸 — 경계에서 좁히는 자리(축의 '이웃'과 같은 뜻)
   const weakest = code.letters.reduce(
@@ -54,10 +96,27 @@ export function CodeNote({ code }: { code: Code }) {
           settled: code.sealed || letter.settled,
         }))}
       />
-      <p className="mt-5.5 text-center text-[18px] font-semibold">
-        「{code.name}」
-      </p>
-      <p className="mt-1.5 text-center text-support text-sub">{code.summary}</p>
+      {/**
+       * 이름은 봉인된 뒤에만 불린다.
+       * 쪽지 안에 접혀 있을 땐 걷는 중에 이름을 보여도 '펼쳐본 사람의 몫'이었지만,
+       * 화면에 그대로 놓이는 지금은 아직 얻지 않은 이름을 선언하는 꼴이 된다.
+       */}
+      {code.sealed ? (
+        <>
+          <p className="mt-5.5 text-center text-[18px] font-semibold">
+            「{code.name}」
+          </p>
+          <p className="mt-1.5 text-center text-support text-sub">
+            {code.summary}
+          </p>
+        </>
+      ) : (
+        <p className="mt-5.5 text-center text-support text-sub">
+          {code.settledCount === 0
+            ? "네 글자가 아직 비어 있어요. 걸을수록 한 자리씩 채워져요."
+            : `네 글자 중 ${code.settledCount}자리가 또렷해졌어요.`}
+        </p>
+      )}
 
       <AxisBars axes={codeCoords(code)} className="mt-7" />
 
@@ -108,86 +167,47 @@ export function CodeNote({ code }: { code: Code }) {
   );
 }
 
-/* ── 결 서재 ── */
-
-export function ShelfNote({
-  gift,
-  shelf,
-  ready,
-  onTake,
-}: {
-  /** 오늘 꽂힐 꾸러미 — 이미 받았으면 null */
-  gift: Gift | null;
-  shelf: Array<ShelfItem & Gift>;
-  ready: boolean;
-  onTake: () => void;
-}) {
-  return (
-    <>
-      {ready && gift ? (
-        <div>
-          <Overline tight className="mb-3">
-            오늘의 꾸러미
-          </Overline>
-          <GiftBody gift={gift} />
-          <Button className="mt-6 w-full" onClick={onTake}>
-            서재에 꽂아둘게요
-          </Button>
-        </div>
-      ) : (
-        <Note className="mb-1">
-          오늘의 꾸러미는 이미 꽂혔어요. 내일 하나가 더 놓일 거예요.
-        </Note>
-      )}
-
-      {shelf.length > 0 && (
-        <div className={cn(ready && gift ? "mt-8 border-t border-line pt-6" : "mt-6")}>
-          <Overline tight className="mb-3.5">
-            서재 {shelf.length} / {SHELF_CAPACITY}칸
-          </Overline>
-          <div className="grid gap-4.5">
-            {shelf.map((item) => (
-              <div key={item.at + item.passageId} className={cn(surface, "rounded-tile px-5 py-4.5")}>
-                <p className="mb-2.5 text-label font-semibold text-sub">
-                  {new Date(item.at).toLocaleDateString("ko-KR")}
-                </p>
-                <GiftBody gift={item} compact />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
+/* ── 맺음 ── */
 
 /**
- * 꾸러미 하나 — 「한 구절, 그리고 그것이 온 곳」과 노래 하나.
+ * 여정의 맺음 — 문장 하나, 책 한 권, 노래 하나. 그게 전부다.
  *
- * 링크는 없다. 제목만 복사해 간다 — 바깥으로 나가는 문을 만들면 선물이 광고가 된다.
+ * 여덟 축을 다 걸어야 열린다. 링크는 없다: 제목만 복사해 간다 —
+ * 바깥으로 나가는 문을 만들면 선물이 광고가 된다.
  */
-function GiftBody({ gift, compact = false }: { gift: Gift; compact?: boolean }) {
-  const { passage, track } = gift;
+export function ClosingNote({ closing }: { closing: Closing }) {
+  const { line, passage, track } = closing;
   return (
     <>
-      <blockquote className={quoteBar}>
-        <p className={compact ? "text-support" : "text-body"}>{passage.text}</p>
-        <p className="mt-2.5 text-caption text-sub">
-          『{passage.source}』 · {passage.author}
-        </p>
-      </blockquote>
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        <CopyButton
-          value={`${passage.source} ${passage.author}`}
-          label="책 제목 복사"
-        />
+      <Serif className="text-center">{line}</Serif>
+
+      <div className="mt-8 border-t border-line pt-6">
+        <Overline tight className="mb-3">
+          한 구절, 그리고 그것이 온 곳
+        </Overline>
+        <blockquote className={quoteBar}>
+          <p className="text-body">{passage.text}</p>
+          <p className="mt-2.5 text-caption text-sub">
+            『{passage.source}』 · {passage.author}
+          </p>
+        </blockquote>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <CopyButton
+            value={`${passage.source} ${passage.author}`}
+            label="책 제목 복사"
+          />
+        </div>
       </div>
 
-      <div className={cn("border-t border-line", compact ? "mt-4.5 pt-4" : "mt-5.5 pt-5")}>
-        <p className={compact ? "text-support font-semibold" : "text-body font-semibold"}>
+      <div className="mt-7 border-t border-line pt-5.5">
+        <Overline tight className="mb-3">
+          곁에 둘 노래 하나
+        </Overline>
+        <p className="text-body font-semibold">
           {track.title}
           <span className="ml-2 font-normal text-sub">{track.artist}</span>
         </p>
+        {/* 가사는 싣지 않는다 — 왜 이 결에 놓였는지 우리가 적은 한 줄만 */}
         <p className="mt-1.5 text-caption text-sub">{track.note}</p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <CopyButton

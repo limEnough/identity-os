@@ -32,7 +32,7 @@ function pick(def: AxisDef, rnd: (n: number) => number): number[] {
     const roll = rnd(n + 1);
     return roll === n ? SKIP : roll;
   });
-  return [o, rnd(opening.children.length), ...probes, 0, 0];
+  return [o, rnd(opening.children.length), ...probes, 0];
 }
 
 /** 씨앗이 정해진 난수 — 분포 관문이 판마다 흔들리지 않도록 */

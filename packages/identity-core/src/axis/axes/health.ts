@@ -1,5 +1,4 @@
 import { canon } from '../canon';
-import { eul, iga } from '../../josa';
 import type { AxisDef, AxisOpening, AxisOption, AxisOutcome } from '../types';
 
 /**
@@ -158,7 +157,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '혼자 조용히, 느슨하게 되돌리는 돌봄',
     summary: '혼자 조용히, 느슨하게 몸을 되돌려요',
     clause: '몸은 혼자 조용히, 느슨하게 되돌린다',
-    anchor: '오늘 삼십 분 일찍 눕기',
     imprint: canon(-0.6, -0.4, -0.2, -0.6),
     fits: [
       '혼자 쉴 시간이 있는 하루',
@@ -184,7 +182,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '누군가와 함께라야 느슨해지는 돌봄',
     summary: '누군가와 함께 있어야 몸이 느슨해져요',
     clause: '몸은 누군가와 함께 있을 때 느슨해진다',
-    anchor: '오늘 한 사람과 같이 밥을 먹거나 걷기',
     imprint: canon(-0.3, -0.5, 0, 0.6),
     fits: [
       '같이 밥 먹고 걷는 사이가 있는 하루',
@@ -210,7 +207,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '혼자, 정해둔 규칙으로 몸을 지키는 돌봄',
     summary: '정해둔 규칙으로 혼자 몸을 지켜요',
     clause: '몸은 정해둔 규칙으로 혼자 지킨다',
-    anchor: '잠드는 시각 하나를 이번 주 내내 지키기',
     imprint: canon(-0.4, 0.6, 0, -0.4),
     fits: [
       '같은 리듬이 이어지는 시기',
@@ -236,7 +232,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '누군가와 약속해 두고 지켜내는 돌봄',
     summary: '누군가와 약속해 두어야 몸을 지켜요',
     clause: '몸은 누군가와 약속해 두고 지킨다',
-    anchor: '한 사람과 이번 주 운동이나 산책을 약속하기',
     imprint: canon(-0.1, 0.6, 0.2, 0.6),
     fits: [
       '같이 할 사람이 있는 운동',
@@ -262,7 +257,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '혼자 가볍게 움직여야 풀리는 돌봄',
     summary: '혼자 가볍게 움직여야 몸이 풀려요',
     clause: '몸은 혼자 가볍게 움직여야 풀린다',
-    anchor: '오늘 한 정거장 먼저 내려 걷기',
     imprint: canon(0.5, -0.3, 0, -0.4),
     fits: [
       '걸을 거리가 있는 동네',
@@ -288,7 +282,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '사람과 놀듯 움직여야 이어지는 돌봄',
     summary: '사람과 놀듯 움직여야 몸 쓰는 일이 이어져요',
     clause: '몸은 사람과 놀듯 움직일 때 오래 간다',
-    anchor: '이번 주에 사람과 함께 몸 쓰는 일 하나 잡기',
     imprint: canon(0.6, -0.3, 0.3, 0.7),
     fits: [
       '같이 하는 운동이나 모임',
@@ -314,7 +307,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '혼자 기록을 쌓아가며 단단해지는 돌봄',
     summary: '혼자 기록을 쌓아가며 몸이 단단해져요',
     clause: '몸은 혼자 기록을 쌓아가며 단단해진다',
-    anchor: '오늘 한 세트나 한 걸음을 어제보다 늘리기',
     imprint: canon(0.6, 0.6, -0.2, -0.4),
     fits: [
       '숫자로 늘어나는 게 보이는 운동',
@@ -340,7 +332,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '함께 겨루며 한계를 미는 돌봄',
     summary: '함께 겨루면서 한계를 밀어요',
     clause: '몸은 함께 겨루며 한계를 민다',
-    anchor: '이번 주 목표 하나를 사람에게 말해두기',
     imprint: canon(0.8, 0.6, 0.4, 0.8),
     fits: [
       '같이 겨룰 상대가 있는 운동',
@@ -413,31 +404,4 @@ export const healthAxis: AxisDef = {
   ],
   outcomes: OUTCOMES,
   naming: 'octant',
-  practiceProbe: {
-    title: '돌봄을 이번 주의\n한 가지로',
-    sub: '몸을 바꾸는 게 아니에요. 지켜지는 크기로만.',
-  },
-  practices: ({ name, outcome, state, profile }) => {
-    const life = profile.results.find((r) => r.id === 'lifestyle');
-    const options = [
-      { action: outcome.anchor, caption: '지켜지는 크기가 좋은 크기예요' },
-      {
-        action: state.probes[2]?.label
-          ? `바빠져도 ${state.probes[2].label} 대신 다른 걸 먼저 줄여보기`
-          : '바빠져도 마지막까지 남길 한 가지를 정해두기',
-        caption: '무너지는 순서를 내가 정하기',
-      },
-      {
-        action: `「${name}」${iga(name)} 지켜진 날과 무너진 날을 이번 주에 하나씩 적기`,
-        caption: '판단 없이, 기록만',
-      },
-    ];
-    if (life) {
-      options.push({
-        action: `「${life.name}」의 하루에서 ${outcome.facets[0]?.chips[0] ?? '몸을 돌보는 일'}${eul(outcome.facets[0]?.chips[0] ?? '몸을 돌보는 일')} 넣을 칸 하나 찾기`,
-        caption: '하루에 자리가 없으면 돌봄도 없어요',
-      });
-    }
-    return options;
-  },
 };

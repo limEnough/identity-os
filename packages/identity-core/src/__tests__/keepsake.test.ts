@@ -3,27 +3,24 @@ import {
   AXES,
   appendEntry,
   axisResult,
+  buildClosing,
   buildCode,
   buildProfile,
+  closingCanon,
   codeShifts,
   daysToSeason,
   emptyProfile,
-  giftReady,
   livingShift,
   overlayCodes,
   PASSAGES,
-  pickGift,
   replayAxis,
-  resolveShelf,
   sealRun,
   seasonReady,
   SEASON_DAYS,
-  SHELF_CAPACITY,
-  shelfCanon,
   shiftNote,
   TRACKS,
 } from '../index';
-import type { AxisResult, Profile, ShelfItem } from '../index';
+import type { AxisResult, Profile } from '../index';
 
 const DAY = 24 * 60 * 60 * 1000;
 const T0 = Date.UTC(2026, 0, 15, 3, 0, 0);
@@ -34,23 +31,20 @@ function walk(n: number, seq: number[] = [0, 0, 0, 0, 0]): Profile {
   for (const def of AXES.slice(0, n)) {
     const result = axisResult(
       def,
-      replayAxis(def, [...seq, 0, 0], buildProfile(results)),
+      replayAxis(def, [...seq, 0], buildProfile(results)),
     );
     if (result) results.push(result);
   }
   return buildProfile(results);
 }
 
-const item = (passageId: string, trackId: string, at: number): ShelfItem => ({
-  passageId,
-  trackId,
-  at: new Date(at).toISOString(),
-});
-
-describe('결 서재', () => {
-  it('아무것도 걷지 않았으면 줄 꾸러미가 없다', () => {
-    expect(pickGift(emptyProfile(), [])).toBeNull();
-    expect(shelfCanon(emptyProfile())).toEqual({
+describe('맺음', () => {
+  it('여덟 축을 다 걸어야 열린다 — 중간에 미리 나눠 주지 않는다', () => {
+    for (let n = 0; n < AXES.length; n++) {
+      expect(buildClosing(walk(n)), `${n}축`).toBeNull();
+    }
+    expect(buildClosing(walk(AXES.length))).not.toBeNull();
+    expect(closingCanon(emptyProfile())).toEqual({
       vivid: 0,
       sharp: 0,
       modern: 0,
@@ -58,15 +52,28 @@ describe('결 서재', () => {
     });
   });
 
-  it('한 축만 걸어도 꾸러미가 나온다 — 구절 하나와 노래 하나', () => {
-    const gift = pickGift(walk(1), []);
-    expect(gift).not.toBeNull();
-    expect(PASSAGES).toContain(gift!.passage);
-    expect(TRACKS).toContain(gift!.track);
+  it('맺음은 셋뿐이다 — 문장 하나, 구절 하나, 노래 하나', () => {
+    const closing = buildClosing(walk(AXES.length))!;
+    expect(Object.keys(closing).sort()).toEqual(['line', 'passage', 'track']);
+    expect(PASSAGES).toContain(closing.passage);
+    expect(TRACKS).toContain(closing.track);
   });
 
-  it('결이 다르면 다른 서가 앞에 선다', () => {
-    // 다른 갈래를 고른 두 사람이 같은 구절만 받으면 매칭이 하는 일이 없는 것이다
+  it('한 문장은 정말 한 문장이다 — 여덟 축이 한 줄로 접힌다', () => {
+    const profile = walk(AXES.length);
+    const closing = buildClosing(profile)!;
+    // 마침표는 끝에 하나뿐이고, 줄바꿈도 없다
+    expect(closing.line.endsWith('.')).toBe(true);
+    expect(closing.line.split('.').filter(Boolean)).toHaveLength(1);
+    expect(closing.line).not.toContain('\n');
+    // 시작한 자리(동경)와 닿은 자리(네 글자)가 한 문장 안에 함께 있다
+    expect(closing.line).toContain(buildCode(profile).name);
+    expect(closing.line).toContain('동경하는');
+  });
+
+  it('결이 다르면 다른 맺음에 닿는다', () => {
+    // 다른 갈래를 고른 두 사람이 같은 구절·같은 문장을 받으면 고르는 일이 무의미하다
+    const lines = new Set<string>();
     const picked = new Set<string>();
     for (const seq of [
       [0, 0, 0, 0, 0],
@@ -76,45 +83,23 @@ describe('결 서재', () => {
       [4, 0, 4, 4, 4],
       [5, 1, 1, 0, 2],
     ]) {
-      const gift = pickGift(walk(AXES.length, seq), []);
-      if (gift) picked.add(gift.passage.id);
+      const closing = buildClosing(walk(AXES.length, seq));
+      if (closing) {
+        lines.add(closing.line);
+        picked.add(closing.passage.id);
+      }
     }
     expect(picked.size).toBeGreaterThan(1);
+    expect(lines.size).toBeGreaterThan(1);
   });
 
-  it('이미 가져간 것은 다시 나오지 않는다 — 서재가 찰 때까지', () => {
-    const profile = walk(AXES.length);
-    const taken: ShelfItem[] = [];
-    for (let i = 0; i < SHELF_CAPACITY; i++) {
-      const gift = pickGift(profile, taken)!;
-      expect(taken.some((t) => t.passageId === gift.passage.id), `${i}칸째`).toBe(
-        false,
-      );
-      expect(taken.some((t) => t.trackId === gift.track.id), `${i}칸째`).toBe(false);
-      taken.push(item(gift.passage.id, gift.track.id, T0 + i * DAY));
-    }
-    // 다 채운 뒤에도 문은 닫히지 않는다
-    expect(pickGift(profile, taken)).not.toBeNull();
+  it('같은 발자국은 언제나 같은 맺음에 닿는다 — 기억해둘 것이 없도록', () => {
+    const a = buildClosing(walk(AXES.length))!;
+    const b = buildClosing(walk(AXES.length))!;
+    expect(a).toEqual(b);
   });
 
-  it('하루에 한 꾸러미 — 같은 날은 더 주지 않고, 날이 바뀌면 다시 열린다', () => {
-    expect(giftReady([], T0)).toBe(true);
-    const taken = [item('prince', 'nightletter', T0)];
-    expect(giftReady(taken, T0 + 60 * 1000)).toBe(false);
-    expect(giftReady(taken, T0 + DAY)).toBe(true);
-  });
-
-  it('기억해둔 꾸러미는 최근 것부터 되살아나고, 사라진 줄은 조용히 걸러진다', () => {
-    const shelf = resolveShelf([
-      item('prince', 'nightletter', T0),
-      item('없는구절', 'nightletter', T0 + DAY),
-      item('walden', 'youth', T0 + 2 * DAY),
-    ]);
-    expect(shelf.map((s) => s.passage.id)).toEqual(['walden', 'prince']);
-    expect(shelf[0].track.title).toBe('청춘');
-  });
-
-  it('구절과 노래의 id는 겹치지 않는다 — 서재의 칸을 세는 단위이므로', () => {
+  it('구절과 노래의 id는 겹치지 않는다 — 고르는 단위이므로', () => {
     expect(new Set(PASSAGES.map((p) => p.id)).size).toBe(PASSAGES.length);
     expect(new Set(TRACKS.map((t) => t.id)).size).toBe(TRACKS.length);
     // 구절에는 언제나 출처가 붙는다 — 선물의 형태가 「한 구절, 그리고 그것이 온 곳」이므로

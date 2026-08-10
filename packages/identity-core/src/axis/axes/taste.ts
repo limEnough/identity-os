@@ -1,5 +1,4 @@
 import { canon } from '../canon';
-import { eul, iga } from '../../josa';
 import type { AxisDef, AxisOpening, AxisOption, AxisOutcome } from '../types';
 
 /**
@@ -159,7 +158,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '비어 있고 시간이 묻은 것에 손이 가는 끌림',
     summary: '비어 있고 시간이 묻은 것에 손이 가요',
     clause: '비어 있고 시간이 묻은 것에 손이 간다',
-    anchor: '오래 쓴 물건 하나를 다시 손질해 쓰기',
     imprint: canon(-0.6, -0.3, -0.6, -0.3),
     fits: [
       '오래 곁에 둘 것을 고를 때',
@@ -185,7 +183,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '지금의 것 중에서도 맑고 비어 있는 쪽에 손이 가는 끌림',
     summary: '지금의 것 중에서도 맑고 비어 있는 쪽에 손이 가요',
     clause: '지금의 것 중에서도 맑고 비어 있는 쪽에 손이 간다',
-    anchor: '방 한구석을 오늘 비워보기',
     imprint: canon(-0.5, -0.2, 0.5, -0.1),
     fits: [
       '정리하고 덜어내는 일',
@@ -211,7 +208,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '오래 검증된 것 중 또렷하고 담백한 쪽에 손이 가는 끌림',
     summary: '오래 검증된 것 중 또렷하고 담백한 쪽에 손이 가요',
     clause: '오래 검증된 것 중 또렷하고 담백한 쪽에 손이 간다',
-    anchor: '오래 쓸 기본 하나를 골라 제대로 갖추기',
     imprint: canon(-0.3, 0.6, -0.5, -0.1),
     fits: [
       '한 번 사서 오래 쓰는 물건',
@@ -237,7 +233,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '지금의 것 중 선이 또렷하고 덜어낸 쪽에 손이 가는 끌림',
     summary: '지금의 것 중 선이 또렷하고 덜어낸 쪽에 손이 가요',
     clause: '지금의 것 중 선이 또렷하고 덜어낸 쪽에 손이 간다',
-    anchor: '쓰지 않는 것 세 개를 오늘 내보내기',
     imprint: canon(-0.3, 0.7, 0.6, 0.2),
     fits: [
       '군더더기를 걷어내는 일',
@@ -263,7 +258,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '오래된 것 중 부드럽고 넉넉한 쪽에 손이 가는 끌림',
     summary: '오래된 것 중 부드럽고 넉넉한 쪽에 손이 가요',
     clause: '오래된 것 중 부드럽고 넉넉한 쪽에 손이 간다',
-    anchor: '따뜻함이 남은 물건 하나를 눈에 보이는 데 두기',
     imprint: canon(0.4, -0.6, -0.6, 0.2),
     fits: [
       '사람을 맞이하는 공간',
@@ -289,7 +283,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '지금의 것 중 부드럽고 풍성한 쪽에 손이 가는 끌림',
     summary: '지금의 것 중 부드럽고 풍성한 쪽에 손이 가요',
     clause: '지금의 것 중 부드럽고 풍성한 쪽에 손이 간다',
-    anchor: '오늘 눈이 즐거워지는 것 하나를 곁에 두기',
     imprint: canon(0.6, -0.5, 0.5, 0.4),
     fits: [
       '보는 즐거움이 중요한 일',
@@ -315,7 +308,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '오래된 것 중 진하고 또렷한 쪽에 손이 가는 끌림',
     summary: '오래된 것 중 진하고 또렷한 쪽에 손이 가요',
     clause: '오래된 것 중 진하고 또렷한 쪽에 손이 간다',
-    anchor: '오래 남을 것 하나에 제대로 시간을 들이기',
     imprint: canon(0.5, 0.5, -0.7, 0.1),
     fits: [
       '오래 남을 것을 고르는 일',
@@ -341,7 +333,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '지금의 것 중 크고 또렷하고 화사한 쪽에 손이 가는 끌림',
     summary: '지금의 것 중 크고 화사하고 눈에 띄는 쪽에 손이 가요',
     clause: '지금의 것 중 크고 화사하고 눈에 띄는 쪽에 손이 간다',
-    anchor: '눈에 띄는 것 하나를 오늘 골라 써보기',
     imprint: canon(0.8, 0.5, 0.6, 0.6),
     fits: [
       '눈에 띄어야 하는 자리',
@@ -414,35 +405,4 @@ export const tasteAxis: AxisDef = {
   ],
   outcomes: OUTCOMES,
   naming: 'octant',
-  practiceProbe: {
-    title: '끌림을 이번 주의\n한 가지로',
-    sub: '취향은 사는 게 아니라 알아채는 거예요.',
-  },
-  practices: ({ name, outcome, state, profile }) => {
-    const life = profile.results.find((r) => r.id === 'lifestyle');
-    const options = [
-      { action: outcome.anchor, caption: '고르기 전에 알아채는 연습' },
-      {
-        action: '눈에 든 것 한 장을 찍고 왜 좋았는지 한 줄 적기',
-        caption: '이유가 쌓이면 취향이 돼요',
-      },
-      {
-        action: `「${name}」${iga(name)} 아닌데 사둔 것 하나를 찾아보기`,
-        caption: '어긋난 것에서 결이 더 잘 보여요',
-      },
-    ];
-    if (life) {
-      options.push({
-        action: `「${life.name}」의 하루 안에 「${name}」${eul(name)} 하나 놓아보기`,
-        caption: '취향은 하루에 놓일 때 삶이 돼요',
-      });
-    }
-    options.push({
-      action: state.probes[1]?.label
-        ? `${state.probes[1].label} 고른 것 세 가지를 나란히 적어보기`
-        : '최근에 고른 것 세 가지를 나란히 적어보기',
-      caption: '나란히 놓으면 공통점이 보여요',
-    });
-    return options;
-  },
 };

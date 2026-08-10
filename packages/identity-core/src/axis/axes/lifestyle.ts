@@ -1,5 +1,4 @@
 import { canon } from '../canon';
-import { eul, iga } from '../../josa';
 import type { AxisDef, AxisOpening, AxisOption, AxisOutcome } from '../types';
 
 /**
@@ -158,7 +157,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '안에서 천천히, 그날의 기운에 맞춰 흐르는 하루',
     summary: '안에서 천천히, 그날의 기운에 하루를 맞춰요',
     clause: '하루를 안에서 천천히, 그날의 기운에 맞춰 흘려보낸다',
-    anchor: '오늘 일정 사이를 삼십 분 비워두기',
     imprint: canon(-0.6, -0.4, -0.3, -0.5),
     fits: [
       '혼자 정할 수 있는 일정',
@@ -184,7 +182,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '정해두지 않고 밖으로 조금씩 나서는 하루',
     summary: '정해두지 않고 밖으로 조금씩 나서요',
     clause: '하루를 정해두지 않고 밖으로 조금씩 나선다',
-    anchor: '오늘 한 번 목적 없이 밖을 걷기',
     imprint: canon(-0.1, -0.6, 0, 0.5),
     fits: [
       '시간을 스스로 쓰는 일',
@@ -210,7 +207,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '같은 시각 같은 순서로, 안에서 단정하게 쌓는 하루',
     summary: '같은 시각 같은 순서로 하루를 단정하게 쌓아요',
     clause: '하루를 같은 시각 같은 순서로 단정하게 쌓는다',
-    anchor: '내일 아침의 첫 세 가지를 오늘 정해두기',
     imprint: canon(-0.4, 0.6, -0.1, -0.3),
     fits: [
       '오래 반복해야 결과가 나오는 일',
@@ -236,7 +232,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '밖의 일정을 또렷하게 세우고 그대로 사는 하루',
     summary: '밖의 일정을 또렷하게 세워두고 그대로 살아요',
     clause: '하루의 일정을 또렷하게 세우고 그대로 산다',
-    anchor: '이번 주 일정 하나를 시작과 끝까지 적어두기',
     imprint: canon(0, 0.6, 0.3, 0.6),
     fits: [
       '일정과 마감이 분명한 일',
@@ -262,7 +257,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '안에서 하고 싶은 것으로 하루가 자꾸 번져가는 하루',
     summary: '하고 싶은 것에 붙들려 하루가 자꾸 번져가요',
     clause: '하고 싶은 것에 붙들려 하루가 자꾸 번져간다',
-    anchor: '오늘 좋아하는 것 하나에 한 시간을 통째로 주기',
     imprint: canon(0.5, -0.4, 0.2, -0.4),
     fits: [
       '깊이 파고들어야 하는 일',
@@ -288,7 +282,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '정하지 않고 밖으로 나서, 그날의 일이 하루를 만드는 하루',
     summary: '정하지 않고 나서서, 그날 생긴 일이 하루를 만들어요',
     clause: '하루를 정해두지 않고 나서서 그날 생긴 일에 맡긴다',
-    anchor: '이번 주 하루를 아무 계획 없이 비워두기',
     imprint: canon(0.6, -0.3, 0.4, 0.7),
     fits: [
       '그때그때 대응하는 일',
@@ -314,7 +307,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '안에서 짜임새 있게, 좁은 시간에 많은 것을 담는 하루',
     summary: '좁은 시간에 많은 것을 짜임새 있게 담아요',
     clause: '좁은 시간에 많은 것을 짜임새 있게 담는다',
-    anchor: '오늘 가장 중요한 한 가지에 방해 없는 90분을 주기',
     imprint: canon(0.4, 0.6, -0.2, -0.3),
     fits: [
       '시간이 부족한 일',
@@ -340,7 +332,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '밖에서 많은 것을 차례로 해내며 속도를 만드는 하루',
     summary: '밖에서 많은 것을 차례로 해내며 속도를 만들어요',
     clause: '밖에서 많은 것을 차례로 해내며 하루의 속도를 만든다',
-    anchor: '이번 주 하나는 일부러 줄여 빈칸으로 두기',
     imprint: canon(0.8, 0.5, 0.5, 0.8),
     fits: [
       '움직인 만큼 결과가 나오는 일',
@@ -413,37 +404,4 @@ export const lifestyleAxis: AxisDef = {
   ],
   outcomes: OUTCOMES,
   naming: 'octant',
-  practiceProbe: {
-    title: '하루의 결을 이번 주의\n한 칸으로',
-    sub: '하루를 다 바꾸지 않아요. 한 칸만 나답게.',
-  },
-  practices: ({ name, outcome, state, profile }) => {
-    const comm = profile.results.find((r) => r.id === 'communication');
-    const options = [
-      { action: outcome.anchor, caption: '하루는 한 칸부터 바뀌어요' },
-      {
-        action: state.probes[0]?.phrase
-          ? `${state.probes[0].phrase}에도 지킬 수 있는 가장 작은 한 가지 정해두기`
-          : '무너지는 날에도 지킬 수 있는 가장 작은 한 가지 정해두기',
-        caption: '무너질 때를 위한 최소한',
-      },
-      {
-        action: `「${name}」${iga(name)} 지켜진 하루와 무너진 하루를 이번 주에 각각 하나씩 적기`,
-        caption: '판단 없이, 기록만',
-      },
-    ];
-    if (comm) {
-      options.push({
-        action: `「${comm.name}」의 자리를 이번 주 하루 안에 한 칸 넣어두기`,
-        caption: '관계도 하루의 한 칸이에요',
-      });
-    }
-    options.push({
-      action: state.opening
-        ? `${state.opening.short}${eul(state.opening.short)} 이번 주에 한 번 더 만들기`
-        : '가장 나다웠던 대목을 이번 주에 한 번 더 만들기',
-      caption: '늘리는 건 새로 만드는 것보다 쉬워요',
-    });
-    return options;
-  },
 };

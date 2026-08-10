@@ -1,5 +1,4 @@
 import { canon } from '../canon';
-import { eul, gwa } from '../../josa';
 import type { AxisDef, AxisOpening, AxisOption, AxisOutcome } from '../types';
 
 /**
@@ -158,7 +157,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '적은 사람과 오래, 말보다 함께 있음으로 이어지는 관계',
     summary: '적은 사람과 오래 가고, 말보다 함께 있는 걸로 이어져요',
     clause: '적은 사람과 오래 가고, 말보다 함께 있음으로 이어진다',
-    anchor: '오래된 한 사람에게 안부 한 줄 먼저 보내기',
     imprint: canon(-0.6, -0.4, -0.3, -0.5),
     fits: [
       '오래 함께할 사람과의 사이',
@@ -184,7 +182,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '누구에게나 문턱이 낮고, 온기로 먼저 다가가는 관계',
     summary: '누구에게나 문턱을 낮추고, 온기로 먼저 다가가요',
     clause: '누구에게나 문턱을 낮추고 온기로 먼저 다가간다',
-    anchor: '오늘 한 사람에게 먼저 안부를 묻기',
     imprint: canon(-0.1, -0.7, -0.1, 0.6),
     fits: [
       '처음 온 사람이 섞여야 하는 자리',
@@ -210,7 +207,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '흐트러지지 않는 선으로 서로를 편하게 하는 관계',
     summary: '선을 분명히 지켜서 서로를 편하게 만들어요',
     clause: '흐트러지지 않는 선으로 서로를 편하게 한다',
-    anchor: '미뤄둔 말 하나를 오늘 정확한 문장으로 전하기',
     imprint: canon(-0.3, 0.6, 0.1, -0.2),
     fits: [
       '약속과 역할이 분명해야 하는 일',
@@ -236,7 +232,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '해야 할 말을 그 자리에서 내는, 오해를 남기지 않는 관계',
     summary: '해야 할 말을 그 자리에서 해서 오해를 남기지 않아요',
     clause: '해야 할 말을 그 자리에서 하고 오해를 남기지 않는다',
-    anchor: '참았던 말 한마디를 오늘 정확히 말하기',
     imprint: canon(0.2, 0.7, 0.3, 0.6),
     fits: [
       '빨리 정해야 하는 회의',
@@ -262,7 +257,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '무겁지 않게 오가며, 자리의 공기를 부드럽게 만드는 관계',
     summary: '무겁지 않게 오가면서 자리의 공기를 부드럽게 만들어요',
     clause: '무겁지 않게 오가며 자리의 공기를 부드럽게 만든다',
-    anchor: '오늘 대화 하나를 웃으며 끝내기',
     imprint: canon(0.5, -0.5, 0.3, 0.2),
     fits: [
       '처음 만난 사람들이 섞이는 자리',
@@ -288,7 +282,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '사람을 많이, 넓게 만나며 자리를 여는 관계',
     summary: '사람을 넓게 만나고, 사람과 사람을 이어줘요',
     clause: '사람을 넓게 만나며 사람과 사람을 잇는다',
-    anchor: '오랜만인 사람 하나에게 오늘 연락하기',
     imprint: canon(0.7, -0.2, 0.4, 0.7),
     fits: [
       '사람을 이어주면 풀리는 일',
@@ -314,7 +307,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '만나는 사람을 스스로 고르고, 그 안에서 깊어지는 관계',
     summary: '만날 사람을 스스로 고르고, 그 안에서 깊어져요',
     clause: '만날 사람을 스스로 고르고 그 안에서 깊어진다',
-    anchor: '오늘 하나의 약속을 정중히 미루고 나에게 쓰기',
     imprint: canon(0.2, 0.5, -0.3, -0.4),
     fits: [
       '내 시간을 지켜야 하는 일',
@@ -340,7 +332,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '자리의 흐름을 먼저 만들고 사람을 모으는 관계',
     summary: '자리의 흐름을 먼저 만들고 사람을 모아요',
     clause: '자리의 흐름을 먼저 만들고 사람을 모은다',
-    anchor: '오늘 모임이나 대화 하나를 내가 먼저 열기',
     imprint: canon(0.8, 0.5, 0.5, 0.8),
     fits: [
       '아무도 시작하지 않는 자리',
@@ -413,31 +404,4 @@ export const communicationAxis: AxisDef = {
   ],
   outcomes: OUTCOMES,
   naming: 'octant',
-  practiceProbe: {
-    title: '관계의 결을 이번 주의\n작은 말 하나로',
-    sub: '사람을 바꾸는 게 아니에요. 나를 편하게 두는 연습이요.',
-  },
-  practices: ({ name, outcome, state, profile }) => {
-    const mindset = profile.results.find((r) => r.id === 'mindset');
-    const options = [
-      { action: outcome.anchor, caption: '관계는 말 한 번으로 조금 움직여요' },
-      {
-        action: state.probes[0]?.phrase
-          ? `${state.probes[0].phrase}에서 하지 못한 말을 한 문장으로 적어두기`
-          : '하지 못한 말 하나를 한 문장으로 적어두기',
-        caption: '보내지 않아도 돼요. 적히면 이미 절반',
-      },
-      {
-        action: `「${name}」${eul(name)} 지키기 어려웠던 순간을 하루 끝에 한 줄로 적기`,
-        caption: '판단 없이, 기록만',
-      },
-    ];
-    if (mindset) {
-      options.push({
-        action: `「${mindset.name}」${gwa(mindset.name)} 「${name}」이 어긋난 대화 하나를 떠올려 적기`,
-        caption: '머리와 관계가 부딪히는 자리를 보기',
-      });
-    }
-    return options;
-  },
 };

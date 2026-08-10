@@ -1,5 +1,4 @@
 import { canon } from '../canon';
-import { eul, gwa, iga } from '../../josa';
 import type { AxisDef, AxisOpening, AxisOption, AxisOutcome } from '../types';
 
 /**
@@ -160,7 +159,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '한 자리를 오래 파며 손으로 깊어지는 성장',
     summary: '한 자리를 오래 파면서 손끝으로 깊어져요',
     clause: '한 자리를 오래 파며 손끝으로 깊어진다',
-    anchor: '이미 잘하는 것 하나를 오늘 한 번 더 다듬기',
     imprint: canon(-0.4, 0.3, -0.6, -0.6),
     fits: [
       '숙련이 곧 값이 되는 일',
@@ -186,7 +184,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '익힌 것을 사람에게 건네며 깊어지는 성장',
     summary: '익힌 것을 사람에게 건네면서 더 깊어져요',
     clause: '익힌 것을 사람에게 건네며 자란다',
-    anchor: '알고 있는 것 하나를 한 사람에게 설명해 주기',
     imprint: canon(-0.2, 0.2, -0.3, 0.6),
     fits: [
       '가르치고 나누는 자리',
@@ -212,7 +209,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '혼자 구조를 세워 어긋남을 없애며 자라는 성장',
     summary: '구조를 세워 어긋남을 없애면서 자라요',
     clause: '구조를 세워 어긋남을 없애며 자란다',
-    anchor: '어질러진 것 하나에 기준을 세워 정돈하기',
     imprint: canon(-0.3, 0.7, -0.2, -0.4),
     fits: [
       '복잡한 것을 정돈하는 일',
@@ -238,7 +234,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '밖의 흐름을 또렷하게 세우며 맡아 자라는 성장',
     summary: '흐릿한 일을 맡아 또렷하게 세우면서 자라요',
     clause: '흐릿한 일을 맡아 또렷하게 세우며 자란다',
-    anchor: '흐릿한 일 하나에 내 이름을 걸고 기준을 정하기',
     imprint: canon(0, 0.7, 0.2, 0.7),
     fits: [
       '주인이 없는 일이 있는 자리',
@@ -264,7 +259,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '혼자 계속 새로 던져보며 자라는 성장',
     summary: '혼자 계속 새로 던져보면서 자라요',
     clause: '계속 새로 던져보며 자란다',
-    anchor: '해보고 싶던 것 하나를 오늘 작게 시작하기',
     imprint: canon(0.6, -0.3, 0.3, -0.4),
     fits: [
       '빨리 만들어보고 고치는 일',
@@ -290,7 +284,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '사람들과 함께 던져보며 넓어지는 성장',
     summary: '사람들과 함께 던져보면서 넓어져요',
     clause: '사람들과 함께 던져보며 넓어진다',
-    anchor: '만든 것 하나를 사람에게 오늘 보여주기',
     imprint: canon(0.7, -0.2, 0.4, 0.7),
     fits: [
       '함께 만드는 팀',
@@ -316,7 +309,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '혼자 기준을 높여가며 실력으로 자라는 성장',
     summary: '스스로 기준을 높여가며 실력으로 자라요',
     clause: '스스로 기준을 높여가며 실력으로 자란다',
-    anchor: '어제보다 조금 더 잘 만든 것 하나를 남기기',
     imprint: canon(0.6, 0.7, -0.2, -0.3),
     fits: [
       '실력이 그대로 드러나는 일',
@@ -342,7 +334,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '밖으로 크게 뻗으며 판을 넓히는 성장',
     summary: '밖으로 크게 뻗으면서 판을 넓혀요',
     clause: '밖으로 크게 뻗으며 판을 넓힌다',
-    anchor: '남에게 말 못 한 목표 하나를 오늘 한 사람에게 말하기',
     imprint: canon(0.9, 0.6, 0.5, 0.9),
     fits: [
       '크게 벌일 수 있는 자리',
@@ -415,38 +406,4 @@ export const careerAxis: AxisDef = {
   ],
   outcomes: OUTCOMES,
   naming: 'octant',
-  practiceProbe: {
-    title: '성장의 결을 이번 주의\n한 걸음으로',
-    sub: '여덟 번째 축이에요. 여기까지 걸어온 것 위에 하나만 얹어요.',
-  },
-  practices: ({ name, outcome, state, profile }) => {
-    const root = profile.results[0];
-    const health = profile.results.find((r) => r.id === 'health');
-    const options = [
-      { action: outcome.anchor, caption: '자라는 건 한 걸음씩만 보여요' },
-      {
-        action: state.probes[0]?.phrase
-          ? `${state.probes[0].phrase}에서 배운 것 하나를 한 줄로 남기기`
-          : '최근에 걸렸던 일에서 배운 것 하나를 한 줄로 남기기',
-        caption: '경험은 적어야 실력이 돼요',
-      },
-      {
-        action: `「${name}」${iga(name)} 통하지 않았던 자리를 하나 적어보기`,
-        caption: '판단 없이, 기록만',
-      },
-    ];
-    if (health) {
-      options.push({
-        action: `「${health.name}」${eul(health.name)} 무너뜨리지 않는 크기로 이번 주 일 하나를 줄이기`,
-        caption: '몸이 무너지면 성장도 멈춰요',
-      });
-    }
-    if (root) {
-      options.push({
-        action: `${root.resultLabel} 「${root.name}」${gwa(root.name)} 「${name}」이 함께 보이는 일 하나를 이번 주에 고르기`,
-        caption: '여덟 축을 한 문장으로 잇기',
-      });
-    }
-    return options;
-  },
 };

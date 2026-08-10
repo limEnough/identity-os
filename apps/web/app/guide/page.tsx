@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   AXES,
@@ -8,57 +8,48 @@ import {
   axisCoords,
   axisHref,
   axisNote,
+  buildClosing,
   buildCode,
-  buildStatement,
   daysToSeason,
   eul,
   footprintsFromQuery,
-  giftReady,
   journeyQuery,
   livingShift,
-  pickGift,
-  resolveShelf,
   sealRun,
   seasonReady,
   walkJourney,
 } from "@identity-os/identity-core";
 import type {
   AxisDef,
+  AxisId,
   ChronicleEntry,
   Footprints,
   JourneyStep,
-  ShelfItem,
 } from "@identity-os/identity-core";
 import {
   Brand,
   Button,
-  CodeMark,
   Desc,
+  Fanfare,
   FloatingCta,
   Heading,
-  Lines,
   Note,
   Orb,
   OrbStage,
   Screen,
-  Serif,
   SkipLink,
 } from "@identity-os/design-system";
 import { OutcomeCard } from "@identity-os/feature-axis";
 import { forgetAll, forgetFrom, loadFootprints } from "../_lib/progress";
-import {
-  loadChronicle,
-  loadShelf,
-  saveChronicle,
-  saveShelf,
-} from "../_lib/keepsake";
+import { loadChronicle, saveChronicle } from "../_lib/keepsake";
 import { GuideSections, type GuideSection } from "./GuideSections";
-import { NoteAside, NoteShelf, type GuideNote } from "./GuideNotes";
+import { NoteBoard, NoteModal, type GuideNote } from "./GuideNotes";
 import {
   ChronicleNote,
+  ClosingNote,
+  CodeBox,
   CodeNote,
   PlayLinks,
-  ShelfNote,
 } from "./GuideKeepsakes";
 
 /**
@@ -95,12 +86,16 @@ function GuideRoute() {
    * 간직되는 것들은 마운트 뒤에 읽는다 — 첫 그림은 서버에서 그려지므로
    * 브라우저의 기억을 그때 꺼내면 두 그림이 어긋난다.
    */
-  const [shelf, setShelf] = useState<ShelfItem[]>([]);
   const [chronicle, setChronicle] = useState<ChronicleEntry[]>([]);
   const [now, setNow] = useState<number | null>(null);
+  /** 펼쳐본 축의 결과 — 목차에서 연다 */
+  const [openId, setOpenId] = useState<AxisId | null>(null);
+  /** 네 글자의 더보기가 열려 있는지 */
+  const [codeOpen, setCodeOpen] = useState(false);
+  /** 축하 화면이 떠 있는지 — 판을 봉인하는 그 순간에만 켜진다 */
+  const [cheering, setCheering] = useState(false);
 
   useEffect(() => {
-    setShelf(loadShelf());
     setChronicle(loadChronicle());
     setNow(Date.now());
   }, []);
@@ -113,37 +108,24 @@ function GuideRoute() {
    * 여덟 축을 다 걸은 판은 연표에 봉인된다 — 같은 발자국은 한 번만.
    * 봉인은 발자국을 지우지 않는다: 지금 판의 가이드북은 그대로 남고,
    * 새 판은 사용자가 계절이 지난 뒤 직접 시작한다.
+   *
+   * **축하 화면도 여기서 뜬다.** 봉인은 판마다 정확히 한 번 일어나므로,
+   * "다 걸었는가"가 아니라 "방금 다 걸었는가"를 묻는 유일한 자리다 —
+   * 완주한 가이드북을 다시 열 때마다 폭죽이 터지면 그건 축하가 아니다.
    */
   useEffect(() => {
     if (now === null || !code.sealed) return;
     const entry = sealRun(journey.profile, journeyQuery(fromUrl), now);
     if (!entry) return;
-    setChronicle((entries) => {
-      const next = appendEntry(entries, entry);
-      if (next !== entries) saveChronicle(next);
-      return next;
-    });
-  }, [now, code.sealed, journey.profile, fromUrl]);
+    const next = appendEntry(chronicle, entry);
+    if (next === chronicle) return;
+    setChronicle(next);
+    saveChronicle(next);
+    setCheering(true);
+  }, [now, code.sealed, journey.profile, fromUrl, chronicle]);
 
-  const gift = useMemo(
-    () => pickGift(journey.profile, shelf),
-    [journey.profile, shelf],
-  );
-  const canTake = now !== null && giftReady(shelf, now);
-
-  const takeGift = useCallback(() => {
-    if (!gift || now === null) return;
-    const next: ShelfItem[] = [
-      ...shelf,
-      {
-        passageId: gift.passage.id,
-        trackId: gift.track.id,
-        at: new Date(now).toISOString(),
-      },
-    ];
-    setShelf(next);
-    saveShelf(next);
-  }, [gift, now, shelf]);
+  /** 여덟 축을 다 걸었을 때만 열리는 맺음 — 그 전에는 null */
+  const closing = useMemo(() => buildClosing(journey.profile), [journey.profile]);
 
   // 뿌리가 없으면 가이드북도 없다 (불변식: Identity 먼저)
   useEffect(() => {
@@ -151,7 +133,6 @@ function GuideRoute() {
   }, [rooted, router]);
   if (!rooted) return null;
 
-  const statement = buildStatement(journey.profile);
   const value = journey.profile.results[0]?.name ?? "";
   const front = journey.current;
 
@@ -181,6 +162,11 @@ function GuideRoute() {
         name: def.name,
         tone: "filled",
         body: axisNote(def, replay.state, profile),
+        // 첫 축의 결과는 문장이 이미 말하고 있다 — 카드로 한 번 더 펼치지 않는다
+        onResult:
+          replay.state.outcome && def.id !== "identity"
+            ? () => setOpenId(def.id)
+            : undefined,
       };
     }
     if (status === "current") {
@@ -205,65 +191,34 @@ function GuideRoute() {
   };
 
   /**
-   * 쪽지는 결과가 아니라 출처로 나뉜다 — 문장은 여정 전체에서 나왔으니 첫 쪽지에,
-   * 축의 결과는 그 축에서 나왔으니 각자의 쪽지에. 따로 떼면 무엇에서 비롯됐는지가 지워진다.
+   * 쪽지는 **다 걸었을 때만** 놓인다.
+   *
+   * 축의 결과는 목차의 제자리에서 열고(§GuideSections), 네 글자는 상자로 화면에
+   * 두었으니, 여기 남는 것은 여정이 끝나야 생기는 둘뿐이다 — 맺음과 연표.
+   *
+   * 걷는 동안엔 비워둔다. 한동안 자라나는 '나의 문장'을 여기 뒀는데, 반쯤 적힌
+   * 글은 읽히기보다 진행률로 읽혔다. 문장은 다 걸은 사람의 것이다.
+   * 새 판을 시작하면 이 자리는 다시 비고, 그 판을 다 걸어야 돌아온다.
    */
-  const notes: GuideNote[] = [
-    {
-      key: "statement",
-      label: "나의 문장",
-      hint: `${journey.profile.results.length}개 축이 적힌 글`,
-      body: (
-        <>
-          <Serif className="text-center">
-            <Lines of={statement} />
-          </Serif>
-          {identity.replay.state.practice && (
-            <NoteAside
-              when="이번 주의 실천"
-              action={identity.replay.state.practice.action}
-              caption={identity.replay.state.practice.caption}
-            />
-          )}
-        </>
-      ),
-    },
-    {
-      key: "code",
-      label: "나의 네 글자",
-      hint: code.sealed
-        ? `${code.mark} · 「${code.name}」`
-        : `${code.mark} · ${code.settledCount}자리 또렷해요`,
-      body: (
-        <>
-          <CodeNote code={code} />
-          <PlayLinks
-            onMap={() => router.push(`/codes?me=${code.key}`)}
-            onTogether={() => router.push(`/together?me=${code.key}`)}
-          />
-        </>
-      ),
-    },
-    {
-      key: "shelf",
-      label: "결 서재",
-      hint:
-        shelf.length > 0
-          ? `${shelf.length}칸${canTake ? " · 오늘 하나 더" : ""}`
-          : "첫 꾸러미가 기다려요",
-      body: (
-        <ShelfNote
-          gift={gift}
-          shelf={resolveShelf(shelf)}
-          ready={canTake}
-          onTake={takeGift}
-        />
-      ),
-    },
-  ];
+  const notes: GuideNote[] = closing
+    ? [
+        {
+          key: "closing",
+          label: "나의 문장",
+          hint: `한 문장 · 『${closing.passage.source}』 · ${closing.track.title}`,
+          // 여덟 축을 다 걸어야 켜지는 단 하나 — 여기서만 금빛을 쓴다
+          gold: true,
+          body: <ClosingNote closing={closing} />,
+        },
+      ]
+    : [];
 
-  // 연표는 봉인된 판이 하나라도 있을 때만 — 빈 연표는 알려줄 것이 없다
-  if (chronicle.length > 0 && now !== null) {
+  /**
+   * 연표도 다 걸었을 때만 곁에 놓인다.
+   * 판이 바뀌어도 **지워지지는 않지만**, 새 판을 걷는 중에 지난 판의 연표를 펼쳐두면
+   * 아직 걷고 있는 사람에게 이미 끝난 이야기를 읽히는 셈이 된다.
+   */
+  if (closing && chronicle.length > 0 && now !== null) {
     notes.push({
       key: "chronicle",
       label: "결 연표",
@@ -281,38 +236,8 @@ function GuideRoute() {
     });
   }
 
-  for (const step of journey.steps) {
-    const { def, status, replay, profile, editable } = step;
-    const { outcome, practice, tentative } = replay.state;
-    // 첫 축은 문장 쪽지가 이미 말하고 있다 — 카드로 한 번 더 펼치지 않는다
-    if (status !== "done" || !outcome || def.id === "identity") continue;
-    notes.push({
-      key: def.id,
-      label: `나의 ${def.resultLabel}`,
-      hint: `「${outcome.name}」${tentative ? " · 아직 임시로" : ""}`,
-      body: (
-        <>
-          <OutcomeCard
-            outcome={outcome}
-            coords={axisCoords(def, replay.state, profile)}
-          />
-          {practice && (
-            <NoteAside
-              when="이번 주의 한 가지"
-              action={practice.action}
-              caption={practice.caption}
-            />
-          )}
-          {/* 다시 걸을 수 있는 것은 가장 마지막에 확정한 축 하나뿐 */}
-          {editable && (
-            <SkipLink className="mt-8.5 mb-1" onClick={() => rewalk(def)}>
-              {def.name}을 다시 걸어볼래요
-            </SkipLink>
-          )}
-        </>
-      ),
-    });
-  }
+  /** 목차에서 펼쳐본 축 */
+  const opened = journey.steps.find((s) => s.def.id === openId) ?? null;
 
   return (
     <Screen>
@@ -325,39 +250,65 @@ function GuideRoute() {
       <Desc>
         {front
           ? `여덟 축 중 ${journey.profile.results.length}개를 걸었어요. 다음은 ${front.name}.`
-          : "여덟 축을 모두 걸었어요. 이제 고쳐 쓰는 일이 남았어요."}
+          : "여덟 축을 모두 걸었어요. 「나의 문장」에 오늘의 한 줄이 놓였어요."}
       </Desc>
 
-      {/**
-       * 네 글자는 쪽지를 펼치지 않아도 보인다 — 축 하나를 끝내고 돌아왔을 때
-       * 무엇이 늘었는지가 여기서 바로 읽혀야 하므로. 자세한 건 쪽지에서.
-       */}
-      <CodeMark
-        className="mt-8.5"
-        slots={code.letters.map((letter) => ({
-          glyph: code.sealed || letter.settled ? letter.letter : "·",
-          settled: code.sealed || letter.settled,
-        }))}
-      />
-      <Note className="mt-3.5">
-        {code.sealed
-          ? `「${code.name}」 — ${code.summary}`
-          : code.settledCount === 0
-            ? "네 글자가 아직 비어 있어요. 걸을수록 한 자리씩 채워져요."
-            : `네 글자 중 ${code.settledCount}자리가 또렷해졌어요.`}
-      </Note>
+      <CodeBox code={code} onMore={() => setCodeOpen(true)} />
 
-      <NoteShelf notes={notes} />
+      <NoteBoard notes={notes} />
       <GuideSections sections={journey.steps.map(sectionOf)} />
 
       <OrbStage className="mt-8.5 mb-4.5">
-        <Orb size={72} mood={front ? "awake" : "rest"} />
+        {/* 다 걸은 사람 앞에서 잠들어 있을 이유가 없다 — 눈이 반짝인다 */}
+        <Orb size={72} mood={front ? "awake" : "spark"} />
       </OrbStage>
       <Note className="mt-2.5">
         {front
           ? `${front.name}의 문이 열려 있어요.`
-          : "여정을 마칠 때까지 조용히 기다릴게요."}
+          : "여덟 축을 다 걸었어요. 오늘의 나를 여기 다 적었어요."}
       </Note>
+
+      {/* 네 글자의 더보기 — 근거와 어디서 왔는지, 그리고 함께 놀 자리 */}
+      {codeOpen && (
+        <NoteModal label="나의 네 글자" onClose={() => setCodeOpen(false)}>
+          <CodeNote code={code} />
+          <PlayLinks
+            onMap={() => router.push(`/codes?me=${code.key}`)}
+            onTogether={() => router.push(`/together?me=${code.key}`)}
+          />
+        </NoteModal>
+      )}
+
+      {/* 목차에서 연 축의 결과 — 무대는 쪽지와 같은 팝업 하나뿐이다 */}
+      {opened?.replay.state.outcome && (
+        <NoteModal
+          label={`나의 ${opened.def.resultLabel}`}
+          onClose={() => setOpenId(null)}
+        >
+          <OutcomeCard
+            outcome={opened.replay.state.outcome}
+            coords={axisCoords(opened.def, opened.replay.state, opened.profile)}
+          />
+          {/* 다시 걸을 수 있는 것은 가장 마지막에 확정한 축 하나뿐 */}
+          {opened.editable && (
+            <SkipLink
+              className="mt-8.5 mb-1"
+              onClick={() => rewalk(opened.def)}
+            >
+              {opened.def.name}을 다시 걸어볼래요
+            </SkipLink>
+          )}
+        </NoteModal>
+      )}
+
+      {/* 판을 봉인하는 그 순간에만 — 삼 초 뒤 스스로 물러난다 */}
+      {cheering && (
+        <Fanfare
+          title="여덟 축을 모두 걸었어요"
+          sub={`${code.mark} 「${code.name}」 — ${code.summary}`}
+          onDone={() => setCheering(false)}
+        />
+      )}
 
       <FloatingCta>
         {/* 다시 걷기는 형태 없는 텍스트로 — 주 버튼 위에 함께 떠 있되 앞서지 않는다 */}

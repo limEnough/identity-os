@@ -1,6 +1,6 @@
-import { addCanon, project, scaleCanon, sumCanon, ZERO } from './canon';
+import { project, scaleCanon, sumCanon, ZERO } from './canon';
 import type { Canon } from './canon';
-import { eul, gwa, iga, ieyo } from '../josa';
+import { gwa, ieyo } from '../josa';
 import type {
   AxisDef,
   AxisOption,
@@ -8,7 +8,6 @@ import type {
   AxisResult,
   AxisState,
   NamedOutcome,
-  PracticeOption,
   Profile,
   Triple,
 } from './types';
@@ -28,8 +27,8 @@ import type {
 /** 넘어간 걸음의 기록값 — 건너뜀도 존중되는 데이터다 */
 export const SKIP = 9;
 
-/** 축 하나는 언제나 일곱 걸음 (0 입구 · 1 구체 · 2~4 깊은 물음 · 5 명명 · 6 실천) */
-export const AXIS_STEPS = 7;
+/** 축 하나는 언제나 여섯 걸음 (0 입구 · 1 구체 · 2~4 깊은 물음 · 5 명명) */
+export const AXIS_STEPS = 6;
 
 /** 좌표를 0~1로 접는 폭 — 다섯 걸음의 delta에 앞 축의 기울기가 하나 더 얹힌다 */
 const SPREAD = 4;
@@ -46,7 +45,6 @@ export function initialAxisState(): AxisState {
     outcome: null,
     name: null,
     tentative: false,
-    practice: null,
   };
 }
 
@@ -204,41 +202,11 @@ function namedOutcome(
     clause: own?.tag ?? outcome.clause ?? outcome.summary ?? outcome.tag,
     fits: outcome.fits ?? [],
     strains: outcome.strains ?? [],
-    anchor: own?.anchor ?? outcome.anchor,
     imprint: own?.imprint ?? outcome.imprint,
     facets: outcome.facets,
     variants: outcome.variants,
     variant: outcomeVariant(outcome, state, profile),
   };
-}
-
-/* ── 실천 ── */
-
-/**
- * 앞선 축을 인용하는 실천 카드 — 걸어온 축이 많을수록 더 많이 열린다.
- * 가까운 축부터 최대 둘. 축을 잇는 카드가 없으면 그 축은 자기 안에서만 닫힌다.
- */
-export function crossPractices(profile: Profile, name: string): PracticeOption[] {
-  const cited = profile.results.filter((r) => r.done).slice(-2).reverse();
-  return cited.map((prior) => ({
-    action: `${prior.resultLabel} 「${prior.name}」${iga(prior.name)} 「${name}」으로 보이는 자리 하나 만들기`,
-    caption: `${prior.axisName}에서 이어진 것 — ${prior.anchor}`,
-  }));
-}
-
-function practiceOptions(
-  def: AxisDef,
-  state: AxisState,
-  profile: Profile,
-): PracticeOption[] {
-  if (!state.outcome || !state.name) return [];
-  const own = def.practices({
-    state,
-    profile,
-    name: state.name,
-    outcome: state.outcome,
-  });
-  return [...own, ...crossPractices(profile, state.name)];
 }
 
 /* ── 리플레이 ── */
@@ -300,12 +268,6 @@ function applyChoice(
       next.tentative = tentative;
       break;
     }
-    case 6: {
-      const options = practiceOptions(def, state, profile);
-      if (!options[choice]) return null;
-      next.practice = options[choice];
-      break;
-    }
     default:
       return null;
   }
@@ -358,7 +320,7 @@ export interface StepOption {
 }
 
 export interface AxisStep {
-  kind: 'choice' | 'naming' | 'practice';
+  kind: 'choice' | 'naming';
   title: string;
   sub?: string;
   /** 명명 단계: 오브 코치의 발화 (단정이 아니라 제안) */
@@ -475,18 +437,6 @@ export function currentAxisStep(
 
       return { kind: 'naming', title: '', coachLines: lines, options, skippable: false };
     }
-    case 6:
-      return {
-        kind: 'practice',
-        title: def.practiceProbe.title,
-        sub: def.practiceProbe.sub,
-        options: practiceOptions(def, state, profile).map((p, i) => ({
-          title: p.action,
-          sub: p.caption,
-          choice: i,
-        })),
-        skippable: false,
-      };
     default:
       return null;
   }
@@ -545,7 +495,6 @@ export function axisResult(
     tag: state.outcome.tag,
     summary: state.outcome.summary,
     clause: state.outcome.clause,
-    anchor: state.practice?.action ?? state.outcome.anchor,
     short: state.opening.short,
     imprint: state.outcome.imprint,
     tentative: state.tentative,

@@ -40,4 +40,4 @@ export {
   healthAxis,
   careerAxis,
 };
-export { DIRECTION, RITUAL } from './identity';
+export { DIRECTION } from './identity';

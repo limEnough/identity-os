@@ -7,7 +7,6 @@ import {
   axisNote,
   axisResult,
   buildProfile,
-  buildStatement,
   currentAxisStep,
   emptyProfile,
   identityAxis,
@@ -22,12 +21,11 @@ import {
   mindsetAxis,
   careerAxis,
   DIRECTION,
-  RITUAL,
 } from '../index';
 import type { AxisDef, AxisResult, Profile } from '../index';
 
-/** 축 하나를 완주시키는 발자국 — 명명은 제안(0), 실천은 첫 카드(0) */
-const full = (a = 0, b = 0, c = 0, d = 0, e = 0) => [a, b, c, d, e, 0, 0];
+/** 축 하나를 완주시키는 발자국 — 다섯 걸음을 고르고, 명명은 제안(0)으로 받는다 */
+const full = (a = 0, b = 0, c = 0, d = 0, e = 0) => [a, b, c, d, e, 0];
 
 /** 앞선 축들을 차례로 완주시켜 만든 프로필 */
 function profileUpTo(index: number): Profile {
@@ -41,13 +39,37 @@ function profileUpTo(index: number): Profile {
 }
 
 describe('공통 축 엔진', () => {
-  it('여덟 축 모두 일곱 걸음으로 완주된다', () => {
+  it('여덟 축 모두 여섯 걸음으로 완주된다 — 축은 이름에서 끝난다', () => {
     AXES.forEach((def, i) => {
       const outcome = replayAxis(def, full(), profileUpTo(i));
       expect(outcome.done, def.id).toBe(true);
       expect(outcome.valid, def.id).toBe(true);
       expect(outcome.state.name, def.id).toBeTruthy();
-      expect(outcome.state.practice, def.id).not.toBeNull();
+    });
+  });
+
+  it('명명이 마지막 걸음이다 — 그 뒤로는 물을 것이 남지 않는다', () => {
+    // 한때 일곱째 걸음으로 '이번 주의 한 가지'를 골랐다. 축마다 하나씩 쌓이면
+    // 거울이 할 일 목록이 되므로 걷어냈다 — 실천 제안은 어디에서도 만들어지지 않는다.
+    AXES.forEach((def, i) => {
+      const profile = profileUpTo(i);
+      const named = replayAxis(def, full(), profile);
+      expect(currentAxisStep(def, named.state, profile), def.id).toBeNull();
+      const kinds = Array.from({ length: AXIS_STEPS }, (_, walked) =>
+        currentAxisStep(
+          def,
+          replayAxis(def, Array(walked).fill(0), profile).state,
+          profile,
+        )?.kind,
+      );
+      expect(kinds, def.id).toEqual([
+        'choice',
+        'choice',
+        'choice',
+        'choice',
+        'choice',
+        'naming',
+      ]);
     });
   });
 
@@ -67,7 +89,7 @@ describe('공통 축 엔진', () => {
 
   it('깊은 물음 셋은 모두 넘어갈 수 있고, 넘어간 걸음은 좌표를 움직이지 않는다', () => {
     for (const def of AXES) {
-      const skipped = replayAxis(def, [0, 0, SKIP, SKIP, SKIP, 0, 0], emptyProfile());
+      const skipped = replayAxis(def, [0, 0, SKIP, SKIP, SKIP, 0], emptyProfile());
       expect(skipped.done, def.id).toBe(true);
       expect(skipped.state.skipped, def.id).toEqual([true, true, true]);
       expect(axisCoords(def, skipped.state, emptyProfile())).toEqual(
@@ -177,7 +199,6 @@ describe('좌표와 결과', () => {
           expect(facet.chips.length, `${def.id}/${outcome.name}/${facet.name}`).toBeGreaterThanOrEqual(4);
         }
         expect(outcome.alt).not.toBe(outcome.name);
-        expect(outcome.anchor, outcome.name).toBeTruthy();
         expect(outcome.variants.length, outcome.name).toBeGreaterThanOrEqual(3);
       }
     }
@@ -230,16 +251,15 @@ describe('좌표와 결과', () => {
   it('Identity는 이름을 좌표가 아니라 고른 갈래에서 데려온다', () => {
     const [first, second, third] = identityAxis.openings[0].children[0].names ?? [];
     expect(replayAxis(identityAxis, full(0, 0), emptyProfile()).state.name).toBe(first);
-    expect(replayAxis(identityAxis, [0, 0, 0, 0, 0, 1, 0], emptyProfile()).state.name).toBe(second);
-    expect(replayAxis(identityAxis, [0, 0, 0, 0, 0, 2, 0], emptyProfile()).state.name).toBe(third);
+    expect(replayAxis(identityAxis, [0, 0, 0, 0, 0, 1], emptyProfile()).state.name).toBe(second);
+    expect(replayAxis(identityAxis, [0, 0, 0, 0, 0, 2], emptyProfile()).state.name).toBe(third);
   });
 
-  it('모든 가치 후보는 방향(DIRECTION)·행동(RITUAL)·각인을 가진다', () => {
+  it('모든 가치 후보는 방향(DIRECTION)과 각인을 가진다', () => {
     for (const opening of identityAxis.openings) {
       for (const child of opening.children) {
         for (const name of child.names ?? []) {
           expect(DIRECTION[name], `${name}의 방향 없음`).toBeTruthy();
-          expect(RITUAL[name], `${name}의 행동 없음`).toBeTruthy();
           expect(identityAxis.namedOutcomes?.[name]?.imprint, `${name}의 각인 없음`).toBeTruthy();
         }
         expect(new Set(child.names).size).toBe(3);
@@ -288,21 +308,7 @@ describe('앞 축이 뒤 축에 미치는 영향', () => {
     expect(lines).toContain('맞나요?');
   });
 
-  it('실천 카드는 앞 축이 쌓일수록 늘어난다', () => {
-    const early = currentAxisStep(
-      mindsetAxis,
-      replayAxis(mindsetAxis, full().slice(0, 6), profileUpTo(1)).state,
-      profileUpTo(1),
-    );
-    const late = currentAxisStep(
-      careerAxis,
-      replayAxis(careerAxis, full().slice(0, 6), profileUpTo(7)).state,
-      profileUpTo(7),
-    );
-    expect(late?.options.length ?? 0).toBeGreaterThan(early?.options.length ?? 0);
-  });
-
-  it('결과 변주도 앞 축이 쌓일수록 넓어진다', () => {
+  it('결과 변주는 앞 축이 쌓일수록 넓어진다', () => {
     const state = replayAxis(careerAxis, [0, 1, 2, 1, 0], emptyProfile()).state;
     const outcome = resolveOutcome(careerAxis, state, emptyProfile());
     const opened = new Set<string>();
@@ -313,18 +319,6 @@ describe('앞 축이 뒤 축에 미치는 영향', () => {
     expect(outcome.variants.length).toBeGreaterThanOrEqual(4);
     expect(opened.size).toBeGreaterThanOrEqual(1);
     expect([...opened].every((v) => outcome.variants.includes(v))).toBe(true);
-  });
-
-  it('Taste가 Style의 뿌리가 된다 — 표현 카드가 끌림을 인용한다', () => {
-    const profile = profileUpTo(5);
-    const taste = profile.results.find((r) => r.id === 'taste');
-    const step = currentAxisStep(
-      styleAxis,
-      replayAxis(styleAxis, [0, 1, 0, 0, 0, 0], profile).state,
-      profile,
-    );
-    expect(step?.kind).toBe('practice');
-    expect(step?.options.some((o) => o.title.includes(taste?.name ?? ''))).toBe(true);
   });
 
   it('가이드북 한 줄은 명명 전에는 비어 있다', () => {
@@ -356,43 +350,3 @@ describe('앞 축이 뒤 축에 미치는 영향', () => {
   });
 });
 
-describe('나의 문장', () => {
-  it('걸어온 축만큼만 적힌다', () => {
-    const two = buildStatement(profileUpTo(2));
-    const all = buildStatement(profileUpTo(8));
-    expect(two.length).toBeGreaterThan(0);
-    expect(all.length).toBeGreaterThan(two.length);
-    expect(all.at(-1)).toContain('그래서 나는,');
-  });
-
-  it('축을 지나면 그 축의 줄이 문장에 하나 붙는다', () => {
-    const beforeStyle = buildStatement(profileUpTo(5));
-    const afterStyle = buildStatement(profileUpTo(6));
-    expect(afterStyle).toHaveLength(beforeStyle.length + 1);
-    expect(afterStyle.at(0)).toBe(beforeStyle.at(0));
-    expect(afterStyle.at(-1)).toBe(beforeStyle.at(-1));
-  });
-
-  it('문장에서 대괄호로 이름을 부르는 자리는 가치 한 줄뿐이다', () => {
-    // 대괄호 이름을 여덟 개 이어 붙이면 문장이 아니라 암호가 된다.
-    // 손글씨로 읽히는 자리이므로, 나머지 축은 풀어 쓴 말로만 실린다.
-    const lines = buildStatement(profileUpTo(8));
-    const named = lines.filter((line) => line.includes('「'));
-    expect(named).toHaveLength(1);
-    expect(named[0]).toContain('그 마음의 이름은');
-    for (const line of lines) expect(line.endsWith('.')).toBe(true);
-  });
-
-  it('이름을 부르는 줄 말고는 전부 서술문이다', () => {
-    // 축의 clause가 비어 tag로 폴백하면 "…하는 관계." 같은 명사구가 손글씨에 실린다.
-    // 나의 문장은 결과 목록이 아니라 읽히는 글이므로, 모든 줄이 문장으로 끝나야 한다.
-    for (const line of buildStatement(profileUpTo(8))) {
-      if (line.includes('「')) continue;
-      expect(line.endsWith('다.'), line).toBe(true);
-    }
-  });
-
-  it('아무것도 걷지 않았으면 빈 문장이다', () => {
-    expect(buildStatement(emptyProfile())).toEqual([]);
-  });
-});

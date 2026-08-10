@@ -17,7 +17,6 @@ export {
   healthAxis,
   careerAxis,
   DIRECTION,
-  RITUAL,
 } from './axis/axes';
 
 /* 공통 축 엔진 */
@@ -37,7 +36,6 @@ export {
   nameCandidates,
   dominantTilt,
   outcomeVariant,
-  crossPractices,
 } from './axis/engine';
 export type { AxisCoord, AxisReplay, AxisStep, StepOption } from './axis/engine';
 
@@ -62,9 +60,6 @@ export type {
   AxisStatus,
 } from './axis/journey';
 
-/* 나의 문장 */
-export { buildStatement } from './axis/statement';
-
 /* 나의 네 글자 — 여덟 축을 가로지르는 결을 네 글자로 */
 export {
   AXIS_COUNT,
@@ -85,19 +80,13 @@ export {
 } from './axis/code';
 export type { Code, CodeAxis, CodeLetter, CodeName, CodePole } from './axis/code';
 
-/* 결 서재 — 한 구절과 그것이 온 곳, 그리고 노래 하나 */
-export { PASSAGES } from './shelf/passages';
-export type { Passage } from './shelf/passages';
-export { TRACKS } from './shelf/tracks';
-export type { Track } from './shelf/tracks';
-export {
-  SHELF_CAPACITY,
-  giftReady,
-  pickGift,
-  resolveShelf,
-  shelfCanon,
-} from './shelf/shelf';
-export type { Gift, ShelfItem } from './shelf/shelf';
+/* 맺음 — 여정을 접은 문장 하나, 한 구절과 그것이 온 곳, 그리고 노래 하나 */
+export { PASSAGES } from './closing/passages';
+export type { Passage } from './closing/passages';
+export { TRACKS } from './closing/tracks';
+export type { Track } from './closing/tracks';
+export { buildClosing, closingCanon, closingLine } from './closing/closing';
+export type { Closing } from './closing/closing';
 
 /* 결 연표 — 네 글자에 날짜가 붙는 곳 */
 export {
@@ -136,8 +125,6 @@ export type {
   AxisResult,
   AxisState,
   NamedOutcome,
-  PracticeCtx,
-  PracticeOption,
   Profile,
   Triple,
 } from './axis/types';

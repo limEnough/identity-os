@@ -1,5 +1,4 @@
 import { canon } from '../canon';
-import { gwa } from '../../josa';
 import type { AxisDef, AxisOpening, AxisOption, AxisOutcome } from '../types';
 
 /**
@@ -143,7 +142,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '오래 쓴 물건처럼, 시간이 스며든 고요함',
     summary: '오래 쓴 물건처럼, 시간이 스며든 조용함으로 보여요',
     clause: '시간이 스며든 고요함으로 나를 드러낸다',
-    anchor: '오래 쓴 물건 하나를 눈에 보이는 자리에 두기',
     imprint: canon(-0.6, -0.3, -0.7, -0.3),
     fits: [
       '오래 알고 지낼 사람들 사이',
@@ -169,7 +167,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '덜어낼수록 또렷해지는, 지금의 조용함',
     summary: '덜어낼수록 또렷해지는 조용함으로 보여요',
     clause: '덜어낼수록 또렷해지는 조용함으로 나를 드러낸다',
-    anchor: '책상 위에서 물건 세 개를 치우기',
     imprint: canon(-0.6, -0.1, 0.5, -0.2),
     fits: [
       '단정함이 곧 신뢰인 자리',
@@ -195,7 +192,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '흐트러지지 않는 선, 오래 지켜온 격식',
     summary: '흐트러지지 않는 선과 지켜온 격식으로 보여요',
     clause: '흐트러지지 않는 선과 지켜온 격식으로 나를 드러낸다',
-    anchor: '외출 전 거울 앞에서 옷깃을 한 번 정리하기',
     imprint: canon(-0.4, 0.6, -0.5, 0.1),
     fits: [
       '예의가 곧 실력으로 읽히는 자리',
@@ -221,7 +217,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '군더더기 없이 선명한, 오늘의 절제',
     summary: '군더더기 없이 선명한 절제로 보여요',
     clause: '군더더기 없이 선명한 절제로 나를 드러낸다',
-    anchor: '오늘 입을 옷을 흑백 두 가지로만 맞추기',
     imprint: canon(-0.3, 0.7, 0.6, 0.2),
     fits: [
       '일로 만나는 자리',
@@ -247,7 +242,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '손때 묻은 것들 사이의 따뜻한 활기',
     summary: '손때 묻은 것들 사이의 따뜻한 활기로 보여요',
     clause: '손때 묻은 것들 사이의 따뜻한 활기로 나를 드러낸다',
-    anchor: '식탁에 식물이나 꽃 하나를 올려두기',
     imprint: canon(0.5, -0.6, -0.5, 0.5),
     fits: [
       '사람을 맞이하는 자리',
@@ -273,7 +267,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '가볍고 둥근, 지금 이 순간의 생기',
     summary: '가볍고 둥근, 지금 이 순간의 생기로 보여요',
     clause: '가볍고 둥근 지금의 생기로 나를 드러낸다',
-    anchor: '눈에 띄는 색 하나를 몸에 지니고 나가기',
     imprint: canon(0.6, -0.5, 0.5, 0.5),
     fits: [
       '처음 만나는 사람들 사이',
@@ -299,7 +292,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '또렷한 윤곽 위에 얹힌 오래된 활력',
     summary: '또렷한 윤곽 위에 얹힌 오래된 활력으로 보여요',
     clause: '또렷한 윤곽 위의 오래된 활력으로 나를 드러낸다',
-    anchor: '손으로 만든 것 하나를 오늘 안에 완성하기',
     imprint: canon(0.5, 0.5, -0.6, 0.3),
     fits: [
       '손으로 하는 일',
@@ -325,7 +317,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '선명하고 빠른, 지금의 생동',
     summary: '선명하고 빠른, 지금의 생동으로 보여요',
     clause: '선명하고 빠른 지금의 생동으로 나를 드러낸다',
-    anchor: '가장 선명한 색의 옷을 꺼내 입기',
     imprint: canon(0.8, 0.6, 0.6, 0.7),
     fits: [
       '눈에 띄어야 하는 자리',
@@ -398,30 +389,4 @@ export const styleAxis: AxisDef = {
   ],
   outcomes: OUTCOMES,
   naming: 'octant',
-  practiceProbe: {
-    title: '무드를 하루 속의\n작은 표현 하나로',
-    sub: '겉모습을 다 바꾸지 않아도 돼요. 이번 주에 딱 하나만.',
-  },
-  practices: ({ name, outcome, profile }) => {
-    const taste = profile.results.find((r) => r.id === 'taste');
-    const options = [
-      { action: `${outcome.anchor} — 이번 주 한 번`, caption: '겉모습을 다 바꾸지 않아도 돼요' },
-      {
-        action: `「${name}」에서 가장 멀어 보이는 물건 하나를 치우기`,
-        caption: '더하기보다 덜어내기',
-      },
-      {
-        action: `${outcome.facets[0]?.chips[0] ?? '가장 나다운 것 하나'} — 오늘 하루만 이 하나를 걸쳐보기`,
-        caption: '표현은 옷장에서 가장 빨리 시작돼요',
-      },
-      { action: '오늘의 나를 사진 한 장으로 남기기', caption: '무드는 기록될 때 선명해져요' },
-    ];
-    if (taste) {
-      options.push({
-        action: `「${taste.name}」${gwa(taste.name)} 「${name}」이 함께 보이는 물건 하나를 곁에 두기`,
-        caption: '끌림과 드러냄이 만나는 자리를 눈에 보이게',
-      });
-    }
-    return options;
-  },
 };

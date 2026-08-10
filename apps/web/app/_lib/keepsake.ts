@@ -1,18 +1,20 @@
-import type { ChronicleEntry, ShelfItem } from "@identity-os/identity-core";
+import type { ChronicleEntry } from "@identity-os/identity-core";
 
 /**
- * 간직되는 것들 — 서재와 연표.
+ * 간직되는 것 — 연표.
  *
  * 발자국(progress.ts)과 다른 점이 하나 있다. 발자국은 '지금 걷는 판'의 것이라
  * 다시 걸으면 지워지지만, **여기 쌓인 것은 판이 바뀌어도 지워지지 않는다.** 지난
- * 계절의 네 글자와 그때 꽂아둔 구절은 새 판을 시작해도 남아 있어야, "나는 계속
- * 수정된다"가 화면의 물건이 된다.
+ * 계절의 네 글자는 새 판을 시작해도 남아 있어야, "나는 계속 수정된다"가 화면의
+ * 물건이 된다.
+ *
+ * 맺음(구절·노래)은 여기 없다. 걸어온 발자국에서 매번 다시 계산되므로 기억해둘
+ * 것이 없다 — 같은 판을 걸었으면 언제 열어도 같은 구절이 놓인다.
  *
  * 저장 방식을 아는 것은 여전히 앱 셸뿐이다 — identity-core는 순수 함수만 갖고,
  * 피처는 props로 받는다(MFE 경계).
  */
 
-const SHELF_KEY = "identity-os:shelf:v1";
 const CHRONICLE_KEY = "identity-os:chronicle:v1";
 
 function read<T>(key: string): T[] {
@@ -34,9 +36,6 @@ function write<T>(key: string, list: T[]) {
     /* 저장 불가 환경은 조용히 무시 */
   }
 }
-
-export const loadShelf = (): ShelfItem[] => read<ShelfItem>(SHELF_KEY);
-export const saveShelf = (items: ShelfItem[]) => write(SHELF_KEY, items);
 
 export const loadChronicle = (): ChronicleEntry[] =>
   read<ChronicleEntry>(CHRONICLE_KEY);

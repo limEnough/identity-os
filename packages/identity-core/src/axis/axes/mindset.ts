@@ -1,5 +1,4 @@
 import { canon } from '../canon';
-import { eul, iga } from '../../josa';
 import type { AxisDef, AxisOpening, AxisOption, AxisOutcome } from '../types';
 
 /**
@@ -167,7 +166,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '가라앉은 자리에서 먼저 느끼고 나중에 설명한다',
     summary: '먼저 느낌이 오고, 설명은 나중에 붙는 편이에요',
     clause: '먼저 느낌으로 알아채고 설명은 나중에 붙인다',
-    anchor: '오늘 든 느낌 하나를 한 문장으로 적어두기',
     imprint: canon(-0.5, -0.5, -0.2, -0.5),
     fits: [
       '조용히 혼자 생각할 시간이 있는 일',
@@ -198,7 +196,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '누가 어떻게 될지부터 살피고 시작한다',
     summary: '판단하기 전에 누가 어떻게 될지를 먼저 살펴요',
     clause: '무엇을 정하든 사람 사정을 먼저 살핀다',
-    anchor: '누군가의 사정을 한 번 더 물어보고 한 마디 건네기',
     imprint: canon(-0.2, -0.6, -0.1, 0.6),
     fits: [
       '여러 사람의 사정을 맞춰야 하는 일',
@@ -229,7 +226,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '소란을 걷어내고 남은 것으로 정한다',
     summary: '어질러진 걸 정리해 놓고 나서야 판단이 서요',
     clause: '어질러진 것을 정리해 두고 나서 판단한다',
-    anchor: '머릿속에 걸린 것들을 종이 한 장에 다 적어보기',
     imprint: canon(-0.4, 0.5, 0, -0.3),
     fits: [
       '복잡한 걸 단순하게 만들어야 하는 일',
@@ -260,7 +256,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '남에게 설명하는 동안 생각이 정리된다',
     summary: '말이나 글로 꺼내야 생각이 정리돼요',
     clause: '말로 꺼내면서 생각을 정리한다',
-    anchor: '오늘 생각한 것 하나를 세 문장으로 남에게 설명해 보기',
     imprint: canon(0, 0.6, 0.3, 0.6),
     fits: [
       '설명하고 설득해야 하는 일',
@@ -291,7 +286,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '한자리에 머물지 않고 옆으로 번져간다',
     summary: '한 가지를 붙들기보다 이것저것으로 번져가요',
     clause: '생각이 한자리에 머물지 않고 옆으로 번져간다',
-    anchor: '오늘 떠오른 딴생각 하나를 버리지 않고 적어두기',
     imprint: canon(0.5, -0.5, 0.2, -0.2),
     fits: [
       '새로운 걸 떠올려야 하는 일',
@@ -322,7 +316,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '머리로 다 따지기 전에 손으로 확인한다',
     summary: '생각으로 따지기보다 작게 해보고 판단해요',
     clause: '따지기 전에 작게 해보고 판단한다',
-    anchor: '알아보고 싶은 것 하나를 오늘 작게 시험해 보기',
     imprint: canon(0.6, -0.2, 0.4, 0.5),
     fits: [
       '빨리 해보고 고칠 수 있는 일',
@@ -353,7 +346,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '끝을 볼 때까지 한 자리를 판다',
     summary: '한 가지를 답이 나올 때까지 붙들어요',
     clause: '한 가지를 답이 나올 때까지 붙든다',
-    anchor: '오늘 생긴 질문 하나를 삼십 분 끝까지 파보기',
     imprint: canon(0.3, 0.5, -0.4, -0.3),
     fits: [
       '어려운 문제를 끝까지 풀어야 하는 일',
@@ -384,7 +376,6 @@ const OUTCOMES: AxisOutcome[] = [
     tag: '충분해지기 전에 정하고 움직이며 고친다',
     summary: '다 알기 전에 정하고, 움직이면서 고쳐요',
     clause: '다 알기 전에 정하고 움직이면서 고친다',
-    anchor: '미뤄둔 판단 하나를 오늘 안에 내려버리기',
     imprint: canon(0.7, 0.5, 0.5, 0.6),
     fits: [
       '속도가 중요한 일',
@@ -462,31 +453,4 @@ export const mindsetAxis: AxisDef = {
   ],
   outcomes: OUTCOMES,
   naming: 'octant',
-  practiceProbe: {
-    title: '생각의 결을 하루 속의\n작은 습관 하나로',
-    sub: '머리를 바꾸는 게 아니에요. 이번 주에 한 번 알아차리기만.',
-  },
-  practices: ({ name, outcome, state, profile }) => {
-    const root = profile.results[0];
-    const options = [
-      { action: outcome.anchor, caption: '생각은 적어야 보여요' },
-      {
-        action: `「${name}」${iga(name)} 잘 안 통했던 순간을 하루 끝에 한 줄로 적기`,
-        caption: '판단 없이, 기록만',
-      },
-      {
-        action: state.probes[0]?.phrase
-          ? `${state.probes[0].phrase}에서 한 번은 반대 방식으로 생각해 보기`
-          : '오늘 한 번은 평소와 반대 방식으로 생각해 보기',
-        caption: '결은 뒤집어 봐야 자기 것이 돼요',
-      },
-    ];
-    if (root) {
-      options.push({
-        action: `${root.resultLabel} 「${root.name}」${eul(root.name)} 「${name}」으로 설명해 보기 — 한 문장`,
-        caption: '뿌리와 머리를 한 줄로 잇기',
-      });
-    }
-    return options;
-  },
 };

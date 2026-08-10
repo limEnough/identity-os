@@ -3,10 +3,15 @@ import type { Canon, PoleProjection } from './canon';
 /**
  * 여덟 축이 공유하는 한 걸음의 모양 — 축마다 다른 것은 '무엇을 묻는지'뿐이다.
  *
- * 축 하나는 언제나 일곱 걸음이다:
+ * 축 하나는 언제나 여섯 걸음이다:
  *   0 입구(넓게) · 1 입구에 매인 구체 · 2~4 깊은 물음 셋(넘어갈 수 있다)
- *   5 명명(제안 + 다른 결 + 이웃 + 유보) · 6 이번 주의 한 가지
+ *   5 명명(제안 + 다른 결 + 이웃 + 유보)
  * 넓게 물어 좁게 닫는다. 뒤 축으로 갈수록 걸음 수가 아니라 결과가 세밀해진다.
+ *
+ * 축은 **이름에서 끝난다.** 한때 일곱째 걸음으로 '이번 주의 한 가지'를 골라두었는데,
+ * 축마다 실천이 하나씩 쌓여 여덟 개의 할 일 목록이 됐다 — 거울을 보러 온 사람에게
+ * 숙제를 얹는 꼴이다. 실천은 처방 금지(불변식 #3)의 가장 미끄러운 자리이기도 하다.
+ * 그래서 축은 분석까지만 하고, 여정 전체가 끝나는 자리에서 맺음 하나만 건넨다.
  */
 
 /** 축 번호 순서 — 여정의 순서이자 의존의 순서다 */
@@ -93,8 +98,6 @@ export interface AxisOutcome {
   fits?: string[];
   /** 이 방식이 나를 힘들게 하는 자리 — 가이드북을 펼쳐본 사람에게만 보인다 */
   strains?: string[];
-  /** 이번 주의 한 가지가 걸리는 닻 */
-  anchor: string;
   /** 이 결과가 뒤 축에 남기는 각인 */
   imprint: Canon;
   /** 네 갈래의 표현 언어 */
@@ -115,7 +118,6 @@ export interface NamedOutcome {
   clause: string;
   fits: string[];
   strains: string[];
-  anchor: string;
   imprint: Canon;
   facets: AxisFacet[];
   variants: string[];
@@ -128,11 +130,6 @@ export interface AxisPole {
   left: string;
   /** 양(+) 방향 — 막대의 오른쪽 끝 */
   right: string;
-}
-
-export interface PracticeOption {
-  action: string;
-  caption: string;
 }
 
 /** 이 축이 확정한 것 — 뒤 축이 읽는 유일한 창구 */
@@ -149,13 +146,12 @@ export interface AxisResult {
   summary: string;
   /** 나의 문장에 들어가는 절 */
   clause: string;
-  anchor: string;
   /** 입구의 축약 표현 — 인용에 쓰인다 */
   short: string;
   imprint: Canon;
   /** '아직 잘 모르겠어요'로 임시 확정했는지 */
   tentative: boolean;
-  /** 표현 걸음까지 끝냈는지 */
+  /** 명명까지 끝냈는지 */
   done: boolean;
 }
 
@@ -179,16 +175,6 @@ export interface AxisState {
   outcome: NamedOutcome | null;
   name: string | null;
   tentative: boolean;
-  practice: PracticeOption | null;
-}
-
-/** 실천 카드를 짓는 재료 */
-export interface PracticeCtx {
-  state: AxisState;
-  profile: Profile;
-  /** 확정된 이름 */
-  name: string;
-  outcome: NamedOutcome;
 }
 
 export interface AxisDef {
@@ -228,10 +214,7 @@ export interface AxisDef {
    * child 축의 이름별 결 — 좌표가 8분면으로 뭉뚱그리는 대신 이름마다 따로 적는다.
    * (Identity의 가치 59종처럼, 이름 자체가 이미 세밀할 때)
    */
-  namedOutcomes?: Record<
-    string,
-    { tag: string; anchor: string; imprint: Canon }
-  >;
+  namedOutcomes?: Record<string, { tag: string; imprint: Canon }>;
   /** 명명 화면에서 오브가 말하는 방식 — 없으면 공통 발화를 쓴다 */
   coachLines?: (ctx: {
     proposed: string;
@@ -241,8 +224,4 @@ export interface AxisDef {
     profile: Profile;
     state: AxisState;
   }) => string[];
-  /** 마지막 걸음의 물음 */
-  practiceProbe: { title: string; sub: string };
-  /** 이번 주의 한 가지 — 앞 축이 쌓일수록 후보가 늘어난다 */
-  practices: (ctx: PracticeCtx) => PracticeOption[];
 }
