@@ -428,7 +428,7 @@ const OUTCOMES: AxisOutcome[] = [
     tag: "안에서 천천히, 그날의 기운에 맞춰 흐르는 하루",
     summary: "안에서 천천히, 그날의 기운에 하루를 맞춰요",
     clause: "하루를 안에서 천천히, 그날의 기운에 맞춰 흘려보낸다",
-    imprint: canon(-0.6, -0.4, -0.3, -0.5),
+    imprint: canon(-0.6, -0.4, 0.4, -0.5),
     pull: pull({ open: 0.4, now: 0.5 }),
     fits: [
       "혼자 정할 수 있는 일정",
@@ -476,7 +476,7 @@ const OUTCOMES: AxisOutcome[] = [
     tag: "정해두지 않고 밖으로 조금씩 나서는 하루",
     summary: "정해두지 않고 밖으로 조금씩 나서요",
     clause: "하루를 정해두지 않고 밖으로 조금씩 나선다",
-    imprint: canon(-0.1, -0.6, 0, 0.5),
+    imprint: canon(-0.1, -0.6, 0.5, 0.5),
     pull: pull({ open: 0.6, now: 0.5 }),
     fits: [
       "시간을 스스로 쓰는 일",
@@ -519,7 +519,7 @@ const OUTCOMES: AxisOutcome[] = [
     tag: "같은 시각 같은 순서로, 안에서 단정하게 쌓는 하루",
     summary: "같은 시각 같은 순서로 하루를 단정하게 쌓아요",
     clause: "하루를 같은 시각 같은 순서로 단정하게 쌓는다",
-    imprint: canon(-0.4, 0.6, -0.1, -0.3),
+    imprint: canon(-0.4, 0.6, -0.8, -0.3),
     pull: pull({ open: -0.9, now: -0.4 }),
     fits: [
       "오래 반복해야 결과가 나오는 일",
@@ -572,7 +572,7 @@ const OUTCOMES: AxisOutcome[] = [
     tag: "밖의 일정을 또렷하게 세우고 그대로 사는 하루",
     summary: "밖의 일정을 또렷하게 세워두고 그대로 살아요",
     clause: "하루의 일정을 또렷하게 세우고 그대로 산다",
-    imprint: canon(0, 0.6, 0.3, 0.6),
+    imprint: canon(0, 0.6, -0.5, 0.6),
     pull: pull({ open: -0.8 }),
     fits: [
       "일정과 마감이 분명한 일",
@@ -630,7 +630,7 @@ const OUTCOMES: AxisOutcome[] = [
     tag: "안에서 하고 싶은 것으로 하루가 자꾸 번져가는 하루",
     summary: "하고 싶은 것에 붙들려 하루가 자꾸 번져가요",
     clause: "하고 싶은 것에 붙들려 하루가 자꾸 번져간다",
-    imprint: canon(0.5, -0.4, 0.2, -0.4),
+    imprint: canon(0.5, -0.4, 0.5, -0.4),
     pull: pull({ open: 0.5, now: 0.7 }),
     fits: [
       "깊이 파고들어야 하는 일",
@@ -683,7 +683,7 @@ const OUTCOMES: AxisOutcome[] = [
     tag: "정하지 않고 밖으로 나서, 그날의 일이 하루를 만드는 하루",
     summary: "정하지 않고 나서서, 그날 생긴 일이 하루를 만들어요",
     clause: "하루를 정해두지 않고 나서서 그날 생긴 일에 맡긴다",
-    imprint: canon(0.6, -0.3, 0.4, 0.7),
+    imprint: canon(0.6, -0.3, 0.7, 0.7),
     pull: pull({ open: 0.9, now: 0.6 }),
     fits: [
       "그때그때 대응하는 일",
@@ -736,7 +736,7 @@ const OUTCOMES: AxisOutcome[] = [
     tag: "안에서 짜임새 있게, 좁은 시간에 많은 것을 담는 하루",
     summary: "좁은 시간에 많은 것을 짜임새 있게 담아요",
     clause: "좁은 시간에 많은 것을 짜임새 있게 담는다",
-    imprint: canon(0.4, 0.6, -0.2, -0.3),
+    imprint: canon(0.4, 0.6, -0.4, -0.3),
     pull: pull({ open: -0.5, now: -0.6 }),
     fits: [
       "시간이 부족한 일",
@@ -789,7 +789,7 @@ const OUTCOMES: AxisOutcome[] = [
     tag: "밖에서 많은 것을 차례로 해내며 속도를 만드는 하루",
     summary: "밖에서 많은 것을 차례로 해내며 속도를 만들어요",
     clause: "밖에서 많은 것을 차례로 해내며 하루의 속도를 만든다",
-    imprint: canon(0.8, 0.5, 0.5, 0.8),
+    imprint: canon(0.8, 0.5, -0.3, 0.8),
     pull: pull({ now: -0.4, wide: 0.5 }),
     fits: [
       "움직인 만큼 결과가 나오는 일",

@@ -8,6 +8,8 @@ import {
   CODE_AXES,
   CODE_KEYS,
   CODE_NAMES,
+  CANON_KEYS,
+  codeCanon,
   codeCoords,
   codeName,
   codeSigns,
@@ -186,10 +188,25 @@ describe('한가운데와 분포', () => {
   const RUNS = 1200;
   const rnd = seeded(7);
   const hits = new Map<string, number>();
+  const cols: Record<string, number[]> = { reach: [], form: [], modern: [], outward: [] };
   for (let t = 0; t < RUNS; t++) {
-    const key = buildCode(walk(AXES.length, rnd)).key;
-    hits.set(key, (hits.get(key) ?? 0) + 1);
+    const profile = walk(AXES.length, rnd);
+    hits.set(buildCode(profile).key, (hits.get(buildCode(profile).key) ?? 0) + 1);
+    const centered = codeCanon(profile);
+    for (const k of CANON_KEYS) cols[k].push(centered[k]);
   }
+
+  const corr = (a: number[], b: number[]) => {
+    const n = a.length;
+    const ma = a.reduce((x, y) => x + y, 0) / n;
+    const mb = b.reduce((x, y) => x + y, 0) / n;
+    let num = 0, da = 0, db = 0;
+    for (let i = 0; i < n; i++) {
+      const x = a[i] - ma, y = b[i] - mb;
+      num += x * y; da += x * x; db += y * y;
+    }
+    return num / Math.sqrt(da * db || 1);
+  };
 
   it('갈래마다 양쪽이 고르게 갈린다 — 한 극으로 쏠리지 않게', () => {
     CODE_AXES.forEach((axis, i) => {
@@ -209,7 +226,36 @@ describe('한가운데와 분포', () => {
 
   it('한 자리가 판을 독차지하지 않는다', () => {
     const [top, n] = [...hits].reduce((a, b) => (b[1] > a[1] ? b : a));
-    expect(n / RUNS, `${top}이 너무 많다`).toBeLessThan(0.3);
+    expect(n / RUNS, `${top}이 너무 많다`).toBeLessThan(0.2);
+  });
+
+  /**
+   * 갈래 하나가 다른 갈래의 **옅은 사본**이 되지 않게 막는 관문.
+   *
+   * 완전한 독립은 불가능하고 바라지도 않는다 — 활기찬 선택은 대개 밖으로 나가는
+   * 선택이기도 해서, 삶에서 실제로 얽혀 있는 것을 억지로 풀면 거울이 아니라 격자가 된다.
+   * 다만 아무도 막대로 보지 않는 넷째 열을 손으로 적을 때 `reach`를 그대로 베끼기
+   * 쉬웠고(한때 축마다 0.5~0.85로 붙어 있었다) 그러면 열여섯 자리가 대각선 두 칸으로
+   * 몰린다. 여기서 잡는 것은 그 베끼기다.
+   */
+  it('네 갈래는 저마다 다른 것을 잰다 — 사본이 되지 않게', () => {
+    const pairs: Array<[string, number]> = [];
+    for (let i = 0; i < CANON_KEYS.length; i++)
+      for (let j = i + 1; j < CANON_KEYS.length; j++)
+        pairs.push([
+          `${CANON_KEYS[i]}×${CANON_KEYS[j]}`,
+          corr(cols[CANON_KEYS[i]], cols[CANON_KEYS[j]]),
+        ]);
+
+    for (const [name, r] of pairs) {
+      expect(Math.abs(r), `${name} 상관 ${r.toFixed(2)}`).toBeLessThan(0.87);
+    }
+    // 0.65를 넘는 것은 '머무름↔뻗어감 × 안으로↔밖으로' 하나뿐이다.
+    // 이건 각인이 아니라 선택지 자체가 얽혀 있어서 남은 것이고, 푸는 데는
+    // 두 극을 가로지르는 선택지를 새로 쓰는 콘텐츠 작업이 필요하다(§8 Phase 6).
+    expect(pairs.filter(([, r]) => Math.abs(r) > 0.65).map(([n]) => n)).toEqual([
+      'reach×outward',
+    ]);
   });
 
   it('한가운데는 0이 아니다 — 그게 이 계산의 요점이다', () => {

@@ -421,7 +421,7 @@ const OUTCOMES: AxisOutcome[] = [
     tag: "가라앉은 자리에서 먼저 느끼고 나중에 설명한다",
     summary: "먼저 느낌이 오고, 설명은 나중에 붙는 편이에요",
     clause: "먼저 느낌으로 알아채고 설명은 나중에 붙인다",
-    imprint: canon(-0.5, -0.5, -0.2, -0.5),
+    imprint: canon(-0.5, -0.5, 0.3, -0.5),
     pull: pull({ now: 0.5 }),
     fits: [
       "조용히 혼자 생각할 시간이 있는 일",
@@ -532,7 +532,7 @@ const OUTCOMES: AxisOutcome[] = [
     tag: "소란을 걷어내고 남은 것으로 정한다",
     summary: "어질러진 걸 정리해 놓고 나서야 판단이 서요",
     clause: "어질러진 것을 정리해 두고 나서 판단한다",
-    imprint: canon(-0.4, 0.5, 0, -0.3),
+    imprint: canon(-0.4, 0.5, -0.4, -0.3),
     pull: pull({ open: -0.5, wide: -0.4 }),
     fits: [
       "복잡한 걸 단순하게 만들어야 하는 일",
@@ -653,7 +653,7 @@ const OUTCOMES: AxisOutcome[] = [
     tag: "한자리에 머물지 않고 옆으로 번져간다",
     summary: "한 가지를 붙들기보다 이것저것으로 번져가요",
     clause: "생각이 한자리에 머물지 않고 옆으로 번져간다",
-    imprint: canon(0.5, -0.5, 0.2, -0.2),
+    imprint: canon(0.5, -0.5, 0.5, -0.2),
     pull: pull({ open: 0.5, wide: 0.8 }),
     fits: [
       "새로운 걸 떠올려야 하는 일",
@@ -711,7 +711,7 @@ const OUTCOMES: AxisOutcome[] = [
     tag: "머리로 다 따지기 전에 손으로 확인한다",
     summary: "생각으로 따지기보다 작게 해보고 판단해요",
     clause: "따지기 전에 작게 해보고 판단한다",
-    imprint: canon(0.6, -0.2, 0.4, 0.5),
+    imprint: canon(0.6, -0.2, 0.5, 0.5),
     pull: pull({ open: 0.4, now: 0.6 }),
     fits: [
       "빨리 해보고 고칠 수 있는 일",
@@ -764,7 +764,7 @@ const OUTCOMES: AxisOutcome[] = [
     tag: "끝을 볼 때까지 한 자리를 판다",
     summary: "한 가지를 답이 나올 때까지 붙들어요",
     clause: "한 가지를 답이 나올 때까지 붙든다",
-    imprint: canon(0.3, 0.5, -0.4, -0.3),
+    imprint: canon(0.3, 0.5, -0.7, -0.3),
     pull: pull({ now: -0.4, wide: -0.9 }),
     fits: [
       "어려운 문제를 끝까지 풀어야 하는 일",
@@ -822,7 +822,7 @@ const OUTCOMES: AxisOutcome[] = [
     tag: "충분해지기 전에 정하고 움직이며 고친다",
     summary: "다 알기 전에 정하고, 움직이면서 고쳐요",
     clause: "다 알기 전에 정하고 움직이면서 고친다",
-    imprint: canon(0.7, 0.5, 0.5, 0.6),
+    imprint: canon(0.7, 0.5, 0.4, 0.6),
     pull: pull({ open: 0.6, now: 0.5 }),
     fits: [
       "속도가 중요한 일",
