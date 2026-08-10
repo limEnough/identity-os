@@ -1,4 +1,5 @@
 import type { Canon, PoleProjection } from "./canon";
+import type { Pull } from "./pull";
 
 /**
  * 여덟 축이 공유하는 한 걸음의 모양 — 축마다 다른 것은 '무엇을 묻는지'뿐이다.
@@ -100,6 +101,12 @@ export interface AxisOutcome {
   strains?: string[];
   /** 이 결과가 뒤 축에 남기는 각인 */
   imprint: Canon;
+  /**
+   * 이 결과가 지고 있는 당김 — 무엇을 얻으려 무엇을 내주는가.
+   * 또렷한 하나둘만 적고 대개는 비운다(§pull). 표현의 두 축(Taste·Style)은
+   * 통째로 비어 있다 — 취향은 트레이드오프가 아니므로.
+   */
+  pull?: Pull;
   /** 네 갈래의 표현 언어 */
   facets: AxisFacet[];
   /**
@@ -119,6 +126,7 @@ export interface NamedOutcome {
   fits: string[];
   strains: string[];
   imprint: Canon;
+  pull: Pull;
   facets: AxisFacet[];
   variants: string[];
   /** 걸어온 길과 앞 축의 수가 함께 고른 변주 하나 */
@@ -149,6 +157,8 @@ export interface AxisResult {
   /** 입구의 축약 표현 — 인용에 쓰인다 */
   short: string;
   imprint: Canon;
+  /** 이 축이 어느 쪽으로 당기고 있는지 — 축을 가로지르는 긴장의 재료 */
+  pull: Pull;
   /** '아직 잘 모르겠어요'로 임시 확정했는지 */
   tentative: boolean;
   /** 명명까지 끝냈는지 */
@@ -214,7 +224,7 @@ export interface AxisDef {
    * child 축의 이름별 결 — 좌표가 8분면으로 뭉뚱그리는 대신 이름마다 따로 적는다.
    * (Identity의 가치 59종처럼, 이름 자체가 이미 세밀할 때)
    */
-  namedOutcomes?: Record<string, { tag: string; imprint: Canon }>;
+  namedOutcomes?: Record<string, { tag: string; imprint: Canon; pull?: Pull }>;
   /** 명명 화면에서 오브가 말하는 방식 — 없으면 공통 발화를 쓴다 */
   coachLines?: (ctx: {
     proposed: string;

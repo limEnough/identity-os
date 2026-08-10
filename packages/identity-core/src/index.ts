@@ -36,8 +36,31 @@ export {
   nameCandidates,
   dominantTilt,
   outcomeVariant,
+  probeAt,
+  tensionProbe,
+  TENSION_SLOT,
 } from './axis/engine';
 export type { AxisCoord, AxisReplay, AxisStep, StepOption } from './axis/engine';
+
+/* 당김과 긴장 — 축을 가로질러 서로 마주 서는 자리 */
+export {
+  PULL_AXES,
+  PULL_KEYS,
+  pull,
+  pullAt,
+  pullAxis,
+  pullsOf,
+  scalePull,
+} from './axis/pull';
+export type { Pull, PullAxis, PullKey, PullPole } from './axis/pull';
+export {
+  PULLED,
+  TENSION,
+  buildTensions,
+  freshTension,
+  strongestTension,
+} from './axis/tension';
+export type { Tension } from './axis/tension';
 
 /* 여정 — 순서와 잠금 */
 export {
@@ -85,7 +108,12 @@ export { PASSAGES } from './closing/passages';
 export type { Passage } from './closing/passages';
 export { TRACKS } from './closing/tracks';
 export type { Track } from './closing/tracks';
-export { buildClosing, closingCanon, closingLine } from './closing/closing';
+export {
+  CLOSING_TENSIONS,
+  buildClosing,
+  closingCanon,
+  closingLine,
+} from './closing/closing';
 export type { Closing } from './closing/closing';
 
 /* 결 연표 — 네 글자에 날짜가 붙는 곳 */

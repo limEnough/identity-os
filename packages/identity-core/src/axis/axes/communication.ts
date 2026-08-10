@@ -1,4 +1,5 @@
 import { canon } from "../canon";
+import { pull } from "../pull";
 import type { AxisDef, AxisOpening, AxisOption, AxisOutcome } from "../types";
 
 /**
@@ -428,6 +429,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "적은 사람과 오래 가고, 말보다 함께 있는 걸로 이어져요",
     clause: "적은 사람과 오래 가고, 말보다 함께 있음으로 이어진다",
     imprint: canon(-0.6, -0.4, -0.3, -0.5),
+    pull: pull({ mine: -0.5, wide: -0.8 }),
     fits: [
       "오래 함께할 사람과의 사이",
       "천천히 신뢰를 쌓아야 하는 일",
@@ -480,6 +482,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "누구에게나 문턱을 낮추고, 온기로 먼저 다가가요",
     clause: "누구에게나 문턱을 낮추고 온기로 먼저 다가간다",
     imprint: canon(-0.1, -0.7, -0.1, 0.6),
+    pull: pull({ mine: -0.8, wide: 0.4 }),
     fits: [
       "처음 온 사람이 섞여야 하는 자리",
       "분위기를 데워야 하는 모임",
@@ -522,6 +525,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "선을 분명히 지켜서 서로를 편하게 만들어요",
     clause: "흐트러지지 않는 선으로 서로를 편하게 한다",
     imprint: canon(-0.3, 0.6, 0.1, -0.2),
+    pull: pull({ open: -0.6, mine: 0.4 }),
     fits: [
       "약속과 역할이 분명해야 하는 일",
       "오래 어긋나지 않아야 하는 사이",
@@ -569,6 +573,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "해야 할 말을 그 자리에서 해서 오해를 남기지 않아요",
     clause: "해야 할 말을 그 자리에서 하고 오해를 남기지 않는다",
     imprint: canon(0.2, 0.7, 0.3, 0.6),
+    pull: pull({ mine: 0.6 }),
     fits: [
       "빨리 정해야 하는 회의",
       "어긋난 것을 바로잡아야 하는 자리",
@@ -626,6 +631,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "무겁지 않게 오가면서 자리의 공기를 부드럽게 만들어요",
     clause: "무겁지 않게 오가며 자리의 공기를 부드럽게 만든다",
     imprint: canon(0.5, -0.5, 0.3, 0.2),
+    pull: pull({ now: 0.6, wide: 0.4 }),
     fits: [
       "처음 만난 사람들이 섞이는 자리",
       "긴장을 풀어야 하는 순간",
@@ -688,6 +694,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "사람을 넓게 만나고, 사람과 사람을 이어줘요",
     clause: "사람을 넓게 만나며 사람과 사람을 잇는다",
     imprint: canon(0.7, -0.2, 0.4, 0.7),
+    pull: pull({ wide: 0.9 }),
     fits: [
       "사람을 이어주면 풀리는 일",
       "새 사람을 자주 만나는 자리",
@@ -740,6 +747,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "만날 사람을 스스로 고르고, 그 안에서 깊어져요",
     clause: "만날 사람을 스스로 고르고 그 안에서 깊어진다",
     imprint: canon(0.2, 0.5, -0.3, -0.4),
+    pull: pull({ mine: 0.5, wide: -0.8 }),
     fits: [
       "내 시간을 지켜야 하는 일",
       "맞는 사람과 오래 가는 팀",
@@ -787,6 +795,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "자리의 흐름을 먼저 만들고 사람을 모아요",
     clause: "자리의 흐름을 먼저 만들고 사람을 모은다",
     imprint: canon(0.8, 0.5, 0.5, 0.8),
+    pull: pull({ open: 0.4, mine: 0.6 }),
     fits: [
       "아무도 시작하지 않는 자리",
       "사람을 모아야 하는 일",

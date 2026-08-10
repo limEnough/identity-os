@@ -4,6 +4,8 @@ import { AXIS_COUNT, buildCode, codeCanon } from '../axis/code';
 import type { Code } from '../axis/code';
 import { eul } from '../josa';
 import type { Profile } from '../axis/types';
+import { buildTensions } from '../axis/tension';
+import type { Tension } from '../axis/tension';
 import { PASSAGES } from './passages';
 import type { Passage } from './passages';
 import { TRACKS } from './tracks';
@@ -30,11 +32,27 @@ import type { Track } from './tracks';
 export interface Closing {
   /** 여정 전체를 접은 한 문장 */
   line: string;
+  /**
+   * 여덟 축이 서로 당기고 있는 자리 — 없을 수도 있다.
+   *
+   * 한 문장이 여정을 하나로 접는다면, 이쪽은 **접히지 않은 것**을 남긴다.
+   * 둘이 함께 있어야 맺음이 거울이 된다: 요약만 있으면 사람이 실제보다
+   * 매끈해지고, 매끈한 요약은 자기 얘기로 읽히지 않는다.
+   */
+  tensions: Tension[];
   /** 한 구절, 그리고 그것이 온 곳 */
   passage: Passage;
   /** 그 곁에 놓이는 노래 하나 */
   track: Track;
 }
+
+/**
+ * 맺음에 놓이는 긴장의 최대 수.
+ *
+ * 둘까지다. 셋을 넘기면 "당신은 이런 모순이 있고, 저런 모순도 있고…"가 되어
+ * 목록으로 읽히고, 목록이 되는 순간 하나하나의 무게가 사라진다.
+ */
+export const CLOSING_TENSIONS = 2;
 
 /**
  * 구절과 견줄 수 있는 모양으로 접은 결.
@@ -95,6 +113,7 @@ export function buildClosing(profile: Profile): Closing | null {
   const target = closingCanon(profile);
   return {
     line: closingLine(profile, buildCode(profile)),
+    tensions: buildTensions(profile).slice(0, CLOSING_TENSIONS),
     passage: nearest(PASSAGES, target),
     track: nearest(TRACKS, target),
   };

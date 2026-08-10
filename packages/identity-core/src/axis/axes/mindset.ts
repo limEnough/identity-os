@@ -1,4 +1,5 @@
 import { canon } from "../canon";
+import { pull } from "../pull";
 import type { AxisDef, AxisOpening, AxisOption, AxisOutcome } from "../types";
 
 /**
@@ -421,6 +422,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "먼저 느낌이 오고, 설명은 나중에 붙는 편이에요",
     clause: "먼저 느낌으로 알아채고 설명은 나중에 붙인다",
     imprint: canon(-0.5, -0.5, -0.2, -0.5),
+    pull: pull({ now: 0.5 }),
     fits: [
       "조용히 혼자 생각할 시간이 있는 일",
       "분위기나 사람의 기색을 읽어야 하는 자리",
@@ -473,6 +475,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "판단하기 전에 누가 어떻게 될지를 먼저 살펴요",
     clause: "무엇을 정하든 사람 사정을 먼저 살핀다",
     imprint: canon(-0.2, -0.6, -0.1, 0.6),
+    pull: pull({ mine: -0.8 }),
     fits: [
       "여러 사람의 사정을 맞춰야 하는 일",
       "갈등을 풀거나 중간에서 잇는 자리",
@@ -530,6 +533,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "어질러진 걸 정리해 놓고 나서야 판단이 서요",
     clause: "어질러진 것을 정리해 두고 나서 판단한다",
     imprint: canon(-0.4, 0.5, 0, -0.3),
+    pull: pull({ open: -0.5, wide: -0.4 }),
     fits: [
       "복잡한 걸 단순하게 만들어야 하는 일",
       "기준이나 규칙을 세우는 자리",
@@ -587,6 +591,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "말이나 글로 꺼내야 생각이 정리돼요",
     clause: "말로 꺼내면서 생각을 정리한다",
     imprint: canon(0, 0.6, 0.3, 0.6),
+    pull: pull({ mine: -0.4 }),
     fits: [
       "설명하고 설득해야 하는 일",
       "여러 사람의 이해를 맞춰야 하는 자리",
@@ -649,6 +654,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "한 가지를 붙들기보다 이것저것으로 번져가요",
     clause: "생각이 한자리에 머물지 않고 옆으로 번져간다",
     imprint: canon(0.5, -0.5, 0.2, -0.2),
+    pull: pull({ open: 0.5, wide: 0.8 }),
     fits: [
       "새로운 걸 떠올려야 하는 일",
       "전혀 다른 것을 이어 붙이는 자리",
@@ -706,6 +712,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "생각으로 따지기보다 작게 해보고 판단해요",
     clause: "따지기 전에 작게 해보고 판단한다",
     imprint: canon(0.6, -0.2, 0.4, 0.5),
+    pull: pull({ open: 0.4, now: 0.6 }),
     fits: [
       "빨리 해보고 고칠 수 있는 일",
       "정답이 없어 부딪혀 봐야 아는 자리",
@@ -758,6 +765,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "한 가지를 답이 나올 때까지 붙들어요",
     clause: "한 가지를 답이 나올 때까지 붙든다",
     imprint: canon(0.3, 0.5, -0.4, -0.3),
+    pull: pull({ now: -0.4, wide: -0.9 }),
     fits: [
       "어려운 문제를 끝까지 풀어야 하는 일",
       "깊은 전문성이 쌓이는 자리",
@@ -815,6 +823,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "다 알기 전에 정하고, 움직이면서 고쳐요",
     clause: "다 알기 전에 정하고 움직이면서 고친다",
     imprint: canon(0.7, 0.5, 0.5, 0.6),
+    pull: pull({ open: 0.6, now: 0.5 }),
     fits: [
       "속도가 중요한 일",
       "결정을 기다리는 사람이 있는 자리",

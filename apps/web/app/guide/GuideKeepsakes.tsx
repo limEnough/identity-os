@@ -176,10 +176,42 @@ export function CodeNote({ code }: { code: Code }) {
  * 바깥으로 나가는 문을 만들면 선물이 광고가 된다.
  */
 export function ClosingNote({ closing }: { closing: Closing }) {
-  const { line, passage, track } = closing;
+  const { line, tensions, passage, track } = closing;
   return (
     <>
       <Serif className="text-center">{line}</Serif>
+
+      {/**
+       * 한 문장이 여정을 하나로 접었다면, 여기는 **접히지 않은 것**의 자리다.
+       * 요약만 놓인 맺음은 사람을 실제보다 매끈하게 만들고, 매끈한 요약은
+       * 자기 얘기로 읽히지 않는다. 다만 고치라고 말하지 않는다 — 두 자리를
+       * 나란히 놓기만 하고, 무엇을 할지는 적지 않는다(불변식 #3).
+       */}
+      {tensions.length > 0 && (
+        <div className="mt-8 border-t border-line pt-6">
+          <Overline tight className="mb-3">
+            접히지 않은 자리
+          </Overline>
+          <div className="grid gap-2.5">
+            {tensions.map((tension) => (
+              <div
+                key={tension.axis.key}
+                className={cn(surface, "rounded-tile px-5 py-4.5")}
+              >
+                <p className="text-body font-semibold">{tension.axis.title}</p>
+                <p className="mt-2 text-support text-sub">{tension.line}</p>
+                <p className="mt-2.5 text-caption text-chip">
+                  {tension.axis.note}
+                </p>
+              </div>
+            ))}
+          </div>
+          <Note className="mt-3.5">
+            어느 쪽으로 가라는 말이 아니에요. 둘 다 당신이 고른 것이고, 둘을 함께
+            지고 있다는 사실이 당신에 대해 가장 많은 걸 말해줘요.
+          </Note>
+        </div>
+      )}
 
       <div className="mt-8 border-t border-line pt-6">
         <Overline tight className="mb-3">
