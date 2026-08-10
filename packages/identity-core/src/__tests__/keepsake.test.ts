@@ -46,8 +46,8 @@ describe('맺음', () => {
     }
     expect(buildClosing(walk(AXES.length))).not.toBeNull();
     expect(closingCanon(emptyProfile())).toEqual({
-      vivid: 0,
-      sharp: 0,
+      reach: 0,
+      form: 0,
       modern: 0,
       outward: 0,
     });

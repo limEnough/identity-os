@@ -797,8 +797,8 @@ export const tasteAxis: AxisDef = {
     { left: "오래된 것", right: "지금의 것" },
   ],
   projection: [
-    { from: "vivid", sign: 1 },
-    { from: "sharp", sign: 1 },
+    { from: "reach", sign: 1 },
+    { from: "form", sign: 1 },
     { from: "modern", sign: 1 },
   ],
   openings: OPENINGS,

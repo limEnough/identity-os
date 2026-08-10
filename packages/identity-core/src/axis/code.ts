@@ -29,7 +29,7 @@ export interface CodePole {
 
 export interface CodeAxis {
   key: keyof Canon;
-  /** 갈래의 이름 — "고요함 ↔ 생동감" */
+  /** 갈래의 이름 — "머무름 ↔ 뻗어감" */
   title: string;
   minus: CodePole;
   plus: CodePole;
@@ -38,22 +38,29 @@ export interface CodeAxis {
 /**
  * 네 갈래의 글자.
  *
- * 글자는 뜻에서 왔다: Quiet·Vivid, Soft·Keen, Rooted·Now, Inward·Outward.
- * 겹치는 알파벳이 없도록 골랐다 — 네 글자를 이어 붙였을 때 어느 자리의 글자인지
- * 순서를 몰라도 읽히도록.
+ * 글자는 처음 뜻의 머리글자에서 왔다: Quiet·Vivid, Soft·Keen, Rooted·Now,
+ * Inward·Outward. 겹치는 알파벳이 없도록 골랐다 — 네 글자를 이어 붙였을 때
+ * 어느 자리의 글자인지 순서를 몰라도 읽히도록.
+ *
+ * **글자는 고정이다.** 앞의 두 갈래는 이름을 실제로 재는 것에 맞게 고쳤지만
+ * (고요함↔생동감 → 머무름↔뻗어감, 부드러움↔또렷함 → 흐름↔윤곽) 글자는 그대로
+ * 둔다: 열쇠 문자열이 결 연표에 저장되어 있고 공유 링크(`/codes?me=`,
+ * `/together?me=`)에도 실려 다니므로, 글자를 바꾸면 지난 판과 남이 보낸 링크가
+ * 함께 깨진다. 사람이 읽는 것은 한국어 이름이고, 글자는 이제 자리표에 가깝다.
  */
 export const CODE_AXES: [CodeAxis, CodeAxis, CodeAxis, CodeAxis] = [
   {
-    key: 'vivid',
-    title: '고요함 ↔ 생동감',
-    minus: { letter: 'Q', pole: '고요함', reads: '조용한 자리에서 힘이 도는' },
-    plus: { letter: 'V', pole: '생동감', reads: '움직임 속에서 힘이 도는' },
+    key: 'reach',
+    title: '머무름 ↔ 뻗어감',
+    minus: { letter: 'Q', pole: '머무름', reads: '한자리에 머물며 채워지는' },
+    // '밖으로'는 넷째 갈래(I/O)의 말이다 — 한 문장에 둘이 겹치지 않도록 '넓게'로 연다
+    plus: { letter: 'V', pole: '뻗어감', reads: '넓게 뻗으며 채워지는' },
   },
   {
-    key: 'sharp',
-    title: '부드러움 ↔ 또렷함',
-    minus: { letter: 'S', pole: '부드러움', reads: '모서리를 둥글리는' },
-    plus: { letter: 'K', pole: '또렷함', reads: '윤곽을 또렷이 세우는' },
+    key: 'form',
+    title: '흐름 ↔ 윤곽',
+    minus: { letter: 'S', pole: '흐름', reads: '흐름에 맡기며 부드러워지는' },
+    plus: { letter: 'K', pole: '윤곽', reads: '윤곽을 먼저 세우는' },
   },
   {
     key: 'modern',
@@ -86,8 +93,8 @@ export const CODE_AXES: [CodeAxis, CodeAxis, CodeAxis, CodeAxis] = [
  * 테스트다(글자마다 35~65%, 한 자리가 4분의 1을 넘지 않기).
  */
 export const CENTER: Canon = {
-  vivid: 0.25,
-  sharp: 0.35,
+  reach: 0.25,
+  form: 0.35,
   modern: 0.14,
   outward: 0.27,
 };
@@ -99,8 +106,8 @@ export const CENTER: Canon = {
 export function codeCanon(profile: Profile): Canon {
   const walked = profile.results.filter((r) => r.done).length;
   return {
-    vivid: profile.acc.vivid - CENTER.vivid * walked,
-    sharp: profile.acc.sharp - CENTER.sharp * walked,
+    reach: profile.acc.reach - CENTER.reach * walked,
+    form: profile.acc.form - CENTER.form * walked,
     modern: profile.acc.modern - CENTER.modern * walked,
     outward: profile.acc.outward - CENTER.outward * walked,
   };

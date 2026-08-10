@@ -67,8 +67,8 @@ export function closingCanon(profile: Profile): Canon {
   const centered = codeCanon(profile);
   const fold = (n: number) => Math.min(1, Math.max(-1, n / walked));
   return {
-    vivid: fold(centered.vivid),
-    sharp: fold(centered.sharp),
+    reach: fold(centered.reach),
+    form: fold(centered.form),
     modern: fold(centered.modern),
     outward: fold(centered.outward),
   };

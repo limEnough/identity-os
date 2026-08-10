@@ -716,8 +716,8 @@ export const identityAxis: AxisDef = {
     { left: '안으로', right: '밖으로' },
   ],
   projection: [
-    { from: 'vivid', sign: 1 },
-    { from: 'sharp', sign: 1 },
+    { from: 'reach', sign: 1 },
+    { from: 'form', sign: 1 },
     { from: 'outward', sign: 1 },
   ],
   openings: ENVY,
