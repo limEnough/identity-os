@@ -1,4 +1,4 @@
-import type { Canon, PoleProjection } from './canon';
+import type { Canon, PoleProjection } from "./canon";
 
 /**
  * 여덟 축이 공유하는 한 걸음의 모양 — 축마다 다른 것은 '무엇을 묻는지'뿐이다.
@@ -16,14 +16,14 @@ import type { Canon, PoleProjection } from './canon';
 
 /** 축 번호 순서 — 여정의 순서이자 의존의 순서다 */
 export type AxisId =
-  | 'identity'
-  | 'mindset'
-  | 'communication'
-  | 'lifestyle'
-  | 'taste'
-  | 'style'
-  | 'health'
-  | 'career';
+  | "identity"
+  | "mindset"
+  | "communication"
+  | "lifestyle"
+  | "taste"
+  | "style"
+  | "health"
+  | "career";
 
 /** 한 걸음의 delta — 그 축의 세 극에 더한다 */
 export type Triple = [number, number, number];
@@ -70,12 +70,12 @@ export interface AxisProbe {
   sub: string;
   skipLabel: string;
   /** 'scoped' = 입구에 매인 갈래를 쓴다. 배열이면 이 축 공용 목록. */
-  options: AxisOption[] | 'scoped';
+  options: AxisOption[] | "scoped";
 }
 
 export interface AxisFacet {
   /** design-system의 CATEGORY_ICONS 키 */
-  icon: string;
+  // icon: string;
   name: string;
   chips: string[];
 }
@@ -209,7 +209,7 @@ export interface AxisDef {
   /** 좌표가 가리키는 여덟 결과 — 비트 순서가 배열 순서다 */
   outcomes: AxisOutcome[];
   /** 명명이 좌표에서 오는가(octant), 고른 갈래에서 오는가(child) */
-  naming: 'octant' | 'child';
+  naming: "octant" | "child";
   /**
    * child 축의 이름별 결 — 좌표가 8분면으로 뭉뚱그리는 대신 이름마다 따로 적는다.
    * (Identity의 가치 59종처럼, 이름 자체가 이미 세밀할 때)

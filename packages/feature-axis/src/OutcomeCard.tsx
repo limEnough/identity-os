@@ -82,18 +82,18 @@ export function OutcomeCard({
       {showFacets && outcome.facets.length > 0 && (
         <div className="mt-8.5 grid gap-3">
           {outcome.facets.map((facet) => {
-            const Icon = CATEGORY_ICONS[facet.icon as CategoryIconName];
+            // const Icon = CATEGORY_ICONS[facet.icon as CategoryIconName];
             return (
               <div
                 className={cn(surface, "rounded-tile px-5 py-4.5")}
                 key={facet.name}
               >
                 <div className="mb-2.5 flex items-center gap-2.5">
-                  {Icon && (
+                  {/* {Icon && (
                     <span className={cn(iconSlot, "text-[28px]")}>
                       <Icon aria-hidden />
                     </span>
-                  )}
+                  )} */}
                   <span className="text-body font-semibold">{facet.name}</span>
                 </div>
                 <ChipRow>
