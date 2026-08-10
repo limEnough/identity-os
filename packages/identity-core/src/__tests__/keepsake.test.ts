@@ -6,6 +6,7 @@ import {
   buildClosing,
   buildCode,
   buildProfile,
+  CLOSING_TENSIONS,
   closingCanon,
   codeShifts,
   daysToSeason,
@@ -52,11 +53,18 @@ describe('맺음', () => {
     });
   });
 
-  it('맺음은 셋뿐이다 — 문장 하나, 구절 하나, 노래 하나', () => {
+  it('맺음은 넷뿐이다 — 문장 하나, 접히지 않은 자리, 구절 하나, 노래 하나', () => {
     const closing = buildClosing(walk(AXES.length))!;
-    expect(Object.keys(closing).sort()).toEqual(['line', 'passage', 'track']);
+    expect(Object.keys(closing).sort()).toEqual([
+      'line',
+      'passage',
+      'tensions',
+      'track',
+    ]);
     expect(PASSAGES).toContain(closing.passage);
     expect(TRACKS).toContain(closing.track);
+    // 접히지 않은 자리는 둘까지다 — 셋을 넘기면 목록이 되고, 목록은 무게를 잃는다
+    expect(closing.tensions.length).toBeLessThanOrEqual(CLOSING_TENSIONS);
   });
 
   it('한 문장은 정말 한 문장이다 — 여덟 축이 한 줄로 접힌다', () => {

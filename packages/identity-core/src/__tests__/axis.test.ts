@@ -13,6 +13,7 @@ import {
   nameCandidates,
   neighborOutcome,
   outcomeVariant,
+  probeAt,
   replayAxis,
   resolveOutcome,
   SKIP,
@@ -127,16 +128,23 @@ describe('공통 축 엔진', () => {
 });
 
 describe('좌표와 결과', () => {
-  /** 도달 가능한 다섯 걸음 조합 전부 */
+  /**
+   * 도달 가능한 다섯 걸음 조합 전부.
+   *
+   * 선택지는 축 데이터가 아니라 **엔진에게 묻는다**. 마지막 깊은 물음은 앞 축들이
+   * 서로 당기고 있으면 통째로 갈리므로(§engine `tensionProbe`), 데이터만 읽으면
+   * 실제로는 없는 선택지를 세게 된다.
+   */
   const combos = (def: AxisDef, profile: Profile): number[][] => {
     const rows: number[][] = [];
     def.openings.forEach((opening, o) => {
       opening.children.forEach((_, c) => {
-        const probeOptions = def.probes.map((probe, i) =>
-          probe.options === 'scoped'
-            ? [...(opening.scoped ?? []).map((_, k) => k), SKIP]
-            : [...probe.options.map((_, k) => k), SKIP],
-        );
+        const probeOptions = [0, 1, 2].map((i) => {
+          const probe = probeAt(def, i, profile);
+          const options =
+            probe.options === 'scoped' ? (opening.scoped ?? []) : probe.options;
+          return [...options.map((_, k) => k), SKIP];
+        });
         for (const p0 of probeOptions[0])
           for (const p1 of probeOptions[1])
             for (const p2 of probeOptions[2]) rows.push([o, c, p0, p1, p2]);

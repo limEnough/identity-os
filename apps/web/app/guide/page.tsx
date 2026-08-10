@@ -205,7 +205,17 @@ function GuideRoute() {
         {
           key: "closing",
           label: "나의 문장",
-          hint: `한 문장 · 『${closing.passage.source}』 · ${closing.track.title}`,
+          hint: [
+            "한 문장",
+            // 접히지 않은 자리가 있으면 펼치기 전에 알려준다 — 이 쪽지의 무게가 달라지므로
+            closing.tensions.length > 0
+              ? `접히지 않은 자리 ${closing.tensions.length}`
+              : null,
+            `『${closing.passage.source}』`,
+            closing.track.title,
+          ]
+            .filter(Boolean)
+            .join(" · "),
           // 여덟 축을 다 걸어야 켜지는 단 하나 — 여기서만 금빛을 쓴다
           gold: true,
           body: <ClosingNote closing={closing} />,

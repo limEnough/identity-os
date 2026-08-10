@@ -15,16 +15,26 @@ import {
   FAINT,
   flipCode,
   isCodeKey,
+  probeAt,
   replayAxis,
   SKIP,
 } from '../index';
 import type { AxisDef, AxisResult, Profile } from '../index';
 
-/** 그 축에서 실제로 고를 수 있는 값만 고른다 — 넘어가기 포함 */
-function pick(def: AxisDef, rnd: (n: number) => number): number[] {
+/**
+ * 그 축에서 실제로 고를 수 있는 값만 고른다 — 넘어가기 포함.
+ * 선택지는 엔진에게 묻는다: 마지막 깊은 물음은 앞 축들이 서로 당기고 있으면
+ * 통째로 갈리므로(§engine `tensionProbe`) 축 데이터만 읽으면 없는 값을 고르게 된다.
+ */
+function pick(
+  def: AxisDef,
+  rnd: (n: number) => number,
+  profile: Profile,
+): number[] {
   const o = rnd(def.openings.length);
   const opening = def.openings[o];
-  const probes = def.probes.map((probe) => {
+  const probes = [0, 1, 2].map((i) => {
+    const probe = probeAt(def, i, profile);
     const n =
       probe.options === 'scoped'
         ? (opening.scoped ?? []).length
@@ -48,7 +58,8 @@ function seeded(seed: number) {
 function walk(n: number, rnd = seeded(11)): Profile {
   const results: AxisResult[] = [];
   for (const def of AXES.slice(0, n)) {
-    const replay = replayAxis(def, pick(def, rnd), buildProfile(results));
+    const profile = buildProfile(results);
+    const replay = replayAxis(def, pick(def, rnd, profile), profile);
     const result = axisResult(def, replay);
     if (result) results.push(result);
   }

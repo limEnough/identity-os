@@ -1,4 +1,5 @@
 import { canon } from "../canon";
+import { pull } from "../pull";
 import type { AxisDef, AxisOpening, AxisOption, AxisOutcome } from "../types";
 
 /**
@@ -420,6 +421,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "혼자 조용히, 느슨하게 몸을 되돌려요",
     clause: "몸은 혼자 조용히, 느슨하게 되돌린다",
     imprint: canon(-0.6, -0.4, -0.2, -0.6),
+    pull: pull({ mine: 0.4, now: 0.4 }),
     fits: [
       "혼자 쉴 시간이 있는 하루",
       "잠으로 회복되는 몸",
@@ -462,6 +464,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "누군가와 함께 있어야 몸이 느슨해져요",
     clause: "몸은 누군가와 함께 있을 때 느슨해진다",
     imprint: canon(-0.3, -0.5, 0, 0.6),
+    pull: pull({ mine: -0.7 }),
     fits: [
       "같이 밥 먹고 걷는 사이가 있는 하루",
       "느슨하게 어울리는 모임",
@@ -504,6 +507,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "정해둔 규칙으로 혼자 몸을 지켜요",
     clause: "몸은 정해둔 규칙으로 혼자 지킨다",
     imprint: canon(-0.4, 0.6, 0, -0.4),
+    pull: pull({ open: -0.7, mine: 0.4 }),
     fits: [
       "같은 리듬이 이어지는 시기",
       "스스로 시간을 정하는 일",
@@ -556,6 +560,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "누군가와 약속해 두어야 몸을 지켜요",
     clause: "몸은 누군가와 약속해 두고 지킨다",
     imprint: canon(-0.1, 0.6, 0.2, 0.6),
+    pull: pull({ open: -0.4, mine: -0.6 }),
     fits: [
       "같이 할 사람이 있는 운동",
       "정해진 시각의 모임",
@@ -603,6 +608,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "혼자 가볍게 움직여야 몸이 풀려요",
     clause: "몸은 혼자 가볍게 움직여야 풀린다",
     imprint: canon(0.5, -0.3, 0, -0.4),
+    pull: pull({ mine: 0.4, now: 0.4 }),
     fits: [
       "걸을 거리가 있는 동네",
       "틈틈이 움직일 수 있는 일",
@@ -645,6 +651,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "사람과 놀듯 움직여야 몸 쓰는 일이 이어져요",
     clause: "몸은 사람과 놀듯 움직일 때 오래 간다",
     imprint: canon(0.6, -0.3, 0.3, 0.7),
+    pull: pull({ mine: -0.6, now: 0.6 }),
     fits: [
       "같이 하는 운동이나 모임",
       "재미가 있어야 이어지는 습관",
@@ -697,6 +704,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "혼자 기록을 쌓아가며 몸이 단단해져요",
     clause: "몸은 혼자 기록을 쌓아가며 단단해진다",
     imprint: canon(0.6, 0.6, -0.2, -0.4),
+    pull: pull({ mine: 0.5, now: -0.7, wide: -0.5 }),
     fits: [
       "숫자로 늘어나는 게 보이는 운동",
       "혼자 집중하는 시간",
@@ -744,6 +752,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "함께 겨루면서 한계를 밀어요",
     clause: "몸은 함께 겨루며 한계를 민다",
     imprint: canon(0.8, 0.6, 0.4, 0.8),
+    pull: pull({ mine: 0.4, now: -0.4 }),
     fits: [
       "같이 겨룰 상대가 있는 운동",
       "목표를 말해두는 자리",

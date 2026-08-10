@@ -1,4 +1,5 @@
 import { canon } from "../canon";
+import { pull } from "../pull";
 import type { AxisDef, AxisOpening, AxisOption, AxisOutcome } from "../types";
 
 /**
@@ -430,6 +431,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "한 자리를 오래 파면서 손끝으로 깊어져요",
     clause: "한 자리를 오래 파며 손끝으로 깊어진다",
     imprint: canon(-0.4, 0.3, -0.6, -0.6),
+    pull: pull({ now: -0.5, wide: -0.9 }),
     fits: [
       "숙련이 곧 값이 되는 일",
       "오래 머물 수 있는 자리",
@@ -478,6 +480,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "익힌 것을 사람에게 건네면서 더 깊어져요",
     clause: "익힌 것을 사람에게 건네며 자란다",
     imprint: canon(-0.2, 0.2, -0.3, 0.6),
+    pull: pull({ mine: -0.7 }),
     fits: [
       "가르치고 나누는 자리",
       "뒤에 오는 사람이 있는 팀",
@@ -526,6 +529,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "구조를 세워 어긋남을 없애면서 자라요",
     clause: "구조를 세워 어긋남을 없애며 자란다",
     imprint: canon(-0.3, 0.7, -0.2, -0.4),
+    pull: pull({ open: -0.6, mine: 0.4 }),
     fits: [
       "복잡한 것을 정돈하는 일",
       "기준과 체계를 만드는 자리",
@@ -589,6 +593,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "흐릿한 일을 맡아 또렷하게 세우면서 자라요",
     clause: "흐릿한 일을 맡아 또렷하게 세우며 자란다",
     imprint: canon(0, 0.7, 0.2, 0.7),
+    pull: pull({ open: -0.4, mine: 0.4 }),
     fits: [
       "주인이 없는 일이 있는 자리",
       "여러 사람을 엮어야 하는 일",
@@ -652,6 +657,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "혼자 계속 새로 던져보면서 자라요",
     clause: "계속 새로 던져보며 자란다",
     imprint: canon(0.6, -0.3, 0.3, -0.4),
+    pull: pull({ open: 0.8, wide: 0.5 }),
     fits: [
       "빨리 만들어보고 고치는 일",
       "정답이 없는 초기 단계",
@@ -705,6 +711,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "사람들과 함께 던져보면서 넓어져요",
     clause: "사람들과 함께 던져보며 넓어진다",
     imprint: canon(0.7, -0.2, 0.4, 0.7),
+    pull: pull({ open: 0.5, mine: -0.5, wide: 0.7 }),
     fits: [
       "함께 만드는 팀",
       "반응을 보며 고치는 일",
@@ -758,6 +765,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "스스로 기준을 높여가며 실력으로 자라요",
     clause: "스스로 기준을 높여가며 실력으로 자란다",
     imprint: canon(0.6, 0.7, -0.2, -0.3),
+    pull: pull({ mine: 0.6, now: -0.6, wide: -0.6 }),
     fits: [
       "실력이 그대로 드러나는 일",
       "혼자 집중할 시간이 있는 자리",
@@ -821,6 +829,7 @@ const OUTCOMES: AxisOutcome[] = [
     summary: "밖으로 크게 뻗으면서 판을 넓혀요",
     clause: "밖으로 크게 뻗으며 판을 넓힌다",
     imprint: canon(0.9, 0.6, 0.5, 0.9),
+    pull: pull({ mine: 0.5, now: -0.4, wide: 0.7 }),
     fits: [
       "크게 벌일 수 있는 자리",
       "사람과 자원을 모아야 하는 일",

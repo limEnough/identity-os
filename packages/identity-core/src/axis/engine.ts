@@ -1,10 +1,12 @@
 import { project, scaleCanon, sumCanon, ZERO } from './canon';
 import type { Canon } from './canon';
+import { freshTension } from './tension';
 import { gwa, ieyo } from '../josa';
 import type {
   AxisDef,
   AxisOption,
   AxisOutcome,
+  AxisProbe,
   AxisResult,
   AxisState,
   NamedOutcome,
@@ -203,10 +205,95 @@ function namedOutcome(
     fits: outcome.fits ?? [],
     strains: outcome.strains ?? [],
     imprint: own?.imprint ?? outcome.imprint,
+    pull: own?.pull ?? outcome.pull ?? {},
     facets: outcome.facets,
     variants: outcome.variants,
     variant: outcomeVariant(outcome, state, profile),
   };
+}
+
+/* ── 긴장의 물음 ── */
+
+/**
+ * 긴장의 물음이 놓이는 자리 — **마지막 깊은 물음**.
+ *
+ * 앞의 둘은 비워둔다. 첫째는 입구에 매인 물음(scoped)이라 이 축에서 가장 구체적인
+ * 자리이고, 둘째는 이 축의 결을 가르는 물음이라 좌표가 여기서 선다. 셋째에 오면
+ * 사용자는 이미 이 축에 대해 할 말을 대부분 했고, 그때 앞선 축들이 끼어든다.
+ */
+export const TENSION_SLOT = 2;
+
+/**
+ * 걸어온 축들이 서로 당기고 있으면, 이 축의 마지막 깊은 물음이 **통째로 갈린다**.
+ *
+ * 여기가 앞 축과 뒤 축이 실제로 만나는 유일한 자리다. 그전까지 앞 축이 뒤 축에
+ * 미치는 영향은 좌표를 조금 기울이는 것뿐이었는데(§canon `project`), 그 기울기는
+ * 상한이 한 걸음의 절반 아래라 일곱 축을 걸어온 사람에게도 클릭 한 번만큼도
+ * 되지 않았다. 걸어온 것이 **묻는 말 자체를 바꿀 때**에야 여정이 하나가 된다.
+ *
+ * 물음은 판정하지 않는다. 어느 쪽이 옳은지 묻지 않고 "여기서는 어느 쪽이 이기는지"만
+ * 묻는다 — 같은 사람이 자리마다 다른 쪽을 고르는 것은 모순이 아니라 사실이므로.
+ *
+ * 선택지의 delta는 새로 적지 않는다. 양쪽 결과가 이미 갖고 있는 각인을 이 축의
+ * 세 극으로 투영해서 쓴다 — 「깊어지는 장인」 쪽을 고르면 그 결과가 이 축에
+ * 남겼을 기울기를 그대로 받는다.
+ */
+export function tensionProbe(def: AxisDef, profile: Profile): AxisProbe | null {
+  // 바로 앞 축이 **새로 연** 긴장만 묻는다 — 같은 둘을 남은 여정 내내 다시 꺼내지 않도록
+  const found = freshTension(profile);
+  if (!found) return null;
+  const { axis, minus, plus } = found;
+  // 각인은 −1~1로 적혀 있으므로 축 하나 몫(soften 1)으로 받아 한 걸음보다 작게 묶는다
+  const lean = (result: AxisResult): Triple =>
+    project(result.imprint, def.projection, 0.7, 1);
+
+  return {
+    title: `「${minus.name}」${gwa(minus.name)} 「${plus.name}」,\n여기서는 어느 쪽이 이기나요?`,
+    sub: `${found.line} ${axis.note}`,
+    skipLabel: '여기서는 그 둘이 부딪히지 않아요 — 넘어갈래요',
+    options: [
+      {
+        title: `「${minus.name}」 쪽이 이겨요`,
+        label: `${axis.minus.pole} 쪽`,
+        phrase: axis.minus.reads,
+        shift: lean(minus),
+      },
+      {
+        title: `「${plus.name}」 쪽이 이겨요`,
+        label: `${axis.plus.pole} 쪽`,
+        phrase: axis.plus.reads,
+        shift: lean(plus),
+      },
+      {
+        title: '둘 다 놓지 못해서 늘 저울질해요',
+        label: '둘 사이에서 저울질',
+        phrase: '두 마음 사이에서 저울질하던 자리',
+        shift: [0, 0, 0],
+      },
+      {
+        title: '때에 따라 다르게 골라요',
+        label: '때에 따라 다름',
+        phrase: '그때그때 다른 쪽을 고르던 자리',
+        shift: [0, 0, 0],
+      },
+    ],
+  };
+}
+
+/**
+ * 이 걸음에서 실제로 던져지는 물음 — 대개는 축 데이터의 것, 긴장이 있으면 그것.
+ * 프로필은 발자국에서 결정론적으로 복원되므로, 리플레이는 언제나 같은 물음에 닿는다.
+ */
+export function probeAt(
+  def: AxisDef,
+  probeIndex: number,
+  profile: Profile,
+): AxisProbe {
+  if (probeIndex === TENSION_SLOT) {
+    const asked = tensionProbe(def, profile);
+    if (asked) return asked;
+  }
+  return def.probes[probeIndex];
 }
 
 /* ── 리플레이 ── */
@@ -215,8 +302,9 @@ function optionsOf(
   def: AxisDef,
   state: AxisState,
   probeIndex: number,
+  profile: Profile,
 ): AxisOption[] {
-  const probe = def.probes[probeIndex];
+  const probe = probeAt(def, probeIndex, profile);
   if (probe.options === 'scoped') return state.opening?.scoped ?? [];
   return probe.options;
 }
@@ -250,7 +338,7 @@ function applyChoice(
         next.skipped[i] = true;
         break;
       }
-      const option = optionsOf(def, state, i)[choice];
+      const option = optionsOf(def, state, i, profile)[choice];
       if (!option) return null;
       next.probes[i] = option;
       break;
@@ -390,12 +478,13 @@ export function currentAxisStep(
     case 3:
     case 4: {
       const i = state.stepIndex - 2;
-      const probe = def.probes[i];
+      // 걸어온 축들이 서로 당기고 있으면 여기서 물음이 통째로 갈린다
+      const probe = probeAt(def, i, profile);
       return {
         kind: 'choice',
         title: probe.title,
         sub: probe.sub,
-        options: optionsOf(def, state, i).map((o, idx) => ({
+        options: optionsOf(def, state, i, profile).map((o, idx) => ({
           emoji: o.emoji,
           title: o.title,
           choice: idx,
@@ -458,7 +547,13 @@ export function axisInsights(
   if (state.opening) chips.push(`${def.chipLabels[0]} — ${state.opening.label}`);
   if (state.child) chips.push(`${def.chipLabels[1]} — ${state.child.label}`);
   state.probes.forEach((p, i) => {
-    if (p) chips.push(`${def.chipLabels[2 + i]} — ${p.label}`);
+    if (!p) return;
+    // 긴장의 물음에 답했으면 그 축의 꼬리표가 아니라 '당김'으로 적힌다 — 물음이 달랐으므로
+    const asked =
+      i === TENSION_SLOT && tensionProbe(def, profile)
+        ? '당김'
+        : def.chipLabels[2 + i];
+    chips.push(`${asked} — ${p.label}`);
   });
   if (state.name) chips.push(`${def.resultLabel} — 「${state.name}」`);
   return chips;
@@ -497,6 +592,7 @@ export function axisResult(
     clause: state.outcome.clause,
     short: state.opening.short,
     imprint: state.outcome.imprint,
+    pull: state.outcome.pull,
     tentative: state.tentative,
     done: replay.done,
   };
