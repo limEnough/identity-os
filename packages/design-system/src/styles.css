@@ -49,6 +49,11 @@
   --color-aurora1: #ccd9ff;
   --color-aurora2: #e5d9ff;
   --color-aurora3: #d2f0ff;
+  /* 맺음 한 자리에만 쓰는 금빛 — 여덟 축을 다 걸어야 켜지므로 흔해지지 않는다 */
+  --color-gold: #a9791a;
+  --color-gold-tint: #fdf4de;
+  --color-gold-line: #ecd9a4;
+  --color-gold-glow: rgba(206, 156, 44, 0.45);
 
   /* ── 서체 — sans는 UI 전부, serif(손글씨)는 '나의 문장' 한 곳 ── */
   --font-sans:
@@ -69,7 +74,7 @@
   --text-label: 11px;
   --text-label--line-height: 1.6;
   /* 손글씨로 쓰인 문장 */
-  --text-quote: 20px;
+  --text-quote: 22px;
   --text-quote--line-height: 1.6;
 
   /* ── 굴곡 ── */
@@ -113,6 +118,10 @@
      조상으로 바뀌어 플로팅 CTA가 함께 움직이기 때문. 그래서 순수 페이드만. */
   --animate-appear: appear 0.7s ease;
   --animate-appear-fast: appear 0.25s ease;
+  /* 여덟 축을 다 걸었을 때 — 퍼져 나가는 빛과 반짝이는 눈, 그리고 금빛 숨 */
+  --animate-flare: flare 2.1s ease-out infinite;
+  --animate-twinkle: twinkle 1.7s ease-in-out infinite;
+  --animate-shine: shine 3.6s ease-in-out infinite;
 
   @keyframes breathe {
     0%,
@@ -158,6 +167,47 @@
       opacity: 0;
     }
     to {
+      opacity: 1;
+    }
+  }
+  /* 오브에서 한 겹씩 퍼져 나가는 빛 — 시차를 두고 겹쳐 쓴다 */
+  @keyframes flare {
+    0% {
+      transform: scale(0.6);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(2.2);
+      opacity: 0;
+    }
+  }
+  /* 금빛 숨 — 맺음 쪽지 하나만 천천히 밝아졌다 어두워진다.
+     깜빡이면 알림이 되므로, 4초에 가까운 주기로 오브의 호흡을 따라간다. */
+  @keyframes shine {
+    0%,
+    100% {
+      box-shadow: 0 6px 20px rgba(206, 156, 44, 0.18);
+    }
+    50% {
+      box-shadow:
+        0 8px 26px rgba(206, 156, 44, 0.34),
+        0 0 22px rgba(206, 156, 44, 0.28);
+    }
+  }
+  /* 반짝임 — 별이 작아졌다 커지며 천천히 돈다.
+     90°에서 네 갈래 별은 처음과 같은 모양이라, 한 바퀴가 끊기지 않고 이어진다.
+     너무 작아지면 눈이 사라진 것처럼 보이므로 0.72 아래로는 내려가지 않는다. */
+  @keyframes twinkle {
+    0% {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(0.72) rotate(45deg);
+      opacity: 0.82;
+    }
+    100% {
+      transform: scale(1) rotate(90deg);
       opacity: 1;
     }
   }
@@ -213,4 +263,19 @@
       transparent 52%
     ),
     linear-gradient(135deg, #4d86ff 0%, #6a5bff 55%, #4fc0ea 100%);
+}
+
+/* 반짝이는 눈 — 네 갈래로 뻗은 별.
+   clip-path는 유틸리티로 쪼개면 뜻을 잃으므로 한 덩어리로 여기 남긴다. */
+@utility orb-eye-spark {
+  clip-path: polygon(
+    50% 0%,
+    61% 39%,
+    100% 50%,
+    61% 61%,
+    50% 100%,
+    39% 61%,
+    0% 50%,
+    39% 39%
+  );
 }

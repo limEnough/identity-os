@@ -45,7 +45,22 @@ export function Modal({
   );
 }
 
-/** 팝업 아래의 버튼 줄 — 둘이 놓이면 반씩 나눠 갖는다 */
-export function ModalActions({ children }: { children: ReactNode }) {
-  return <div className="mt-6.5 flex gap-2.5 *:flex-1">{children}</div>;
+/**
+ * 팝업 아래의 버튼 줄 — 둘이 놓이면 반씩 나눠 갖는다.
+ *
+ * @param tight 위 칸이 스크롤되는 팝업에서. 여백 대신 **페이드**가 경계를 맡으므로
+ *   버튼이 스크롤 영역에 바로 붙는다 — 사이를 비워두면 글이 허공에서 잘린다.
+ */
+export function ModalActions({
+  tight = false,
+  children,
+}: {
+  tight?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div className={cn("flex gap-2.5 *:flex-1", !tight && "mt-6.5")}>
+      {children}
+    </div>
+  );
 }

@@ -1,19 +1,13 @@
 import { cn } from "../cn";
-import { quoteBar, surface, surfaceLift } from "../recipes";
+import { surface, surfaceLift } from "../recipes";
 import type { ChainOptionView } from "./types";
 
-/**
- * 갈림길의 선택지들 — 앞선 걸음일수록 갈래가 많고(예닐곱), 뒤로 갈수록 줄어든다.
- *
- * @param quoted 실천·표현처럼 '내가 하기로 한 것'을 고르는 걸음이면 왼쪽 인용 막대로 묶는다
- */
+/** 갈림길의 선택지들 — 앞선 걸음일수록 갈래가 많고(예닐곱), 뒤로 갈수록 줄어든다 */
 export function ChoiceList({
   options,
-  quoted = false,
   onChoose,
 }: {
   options: ChainOptionView[];
-  quoted?: boolean;
   onChoose: (choice: number) => void;
 }) {
   return (
@@ -37,7 +31,7 @@ export function ChoiceList({
               {option.emoji}
             </span>
           )}
-          <span className={cn("min-w-0", quoted && quoteBar)}>
+          <span className="min-w-0">
             <span className="block text-body font-semibold">
               {option.title}
             </span>

@@ -20,7 +20,6 @@ export function ChainScreen({
   totalSteps,
   stepIndex,
   insights,
-  quoted = false,
   aside,
   onChoose,
   onSkip,
@@ -29,8 +28,6 @@ export function ChainScreen({
   totalSteps: number;
   stepIndex: number;
   insights: string[];
-  /** 선택지를 인용 막대로 묶을 걸음인지 (실천·표현) */
-  quoted?: boolean;
   /** 코치의 제안 아래에 놓을 근거 — Style은 축 막대를 함께 보여준다 */
   aside?: ReactNode;
   onChoose: (choice: number) => void;
@@ -59,7 +56,7 @@ export function ChainScreen({
         </>
       )}
 
-      <ChoiceList options={step.options} quoted={quoted} onChoose={onChoose} />
+      <ChoiceList options={step.options} onChoose={onChoose} />
 
       {step.skippable && (
         <SkipLink className="mt-8.5" onClick={onSkip}>

@@ -21,7 +21,7 @@ export interface AxisFlowProps {
   initialSeq: number[];
   /** 한 걸음마다 호출 — 앱이 라우트(URL)와 브라우저 기억에 적는다 */
   onSeqChange: (seq: number[]) => void;
-  /** 일곱 걸음 완주 시 호출 */
+  /** 여섯 걸음 완주 시 호출 */
   onComplete: (seq: number[]) => void;
 }
 
@@ -62,7 +62,6 @@ export function AxisFlow({
       totalSteps={AXIS_STEPS}
       stepIndex={outcome.state.stepIndex}
       insights={axisInsights(def, outcome.state, profile)}
-      quoted={step.kind === "practice"}
       aside={
         // 좌표가 이름을 정하는 축에서만 근거를 보여준다 — 판정이 아니라 거울이므로.
         // Identity는 이름이 고른 갈래에서 오므로 막대가 근거가 되지 않는다.

@@ -28,6 +28,7 @@ export {
 /* 코치 */
 export { Orb, OrbStage } from "./orb/Orb";
 export { Bubble, CoachBubble } from "./orb/Coach";
+export { Fanfare } from "./orb/Fanfare";
 
 /* 나의 네 글자 */
 export { CodeMark } from "./code/CodeMark";
