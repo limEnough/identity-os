@@ -159,7 +159,7 @@ describe('앞 축의 결과가 뒤 축의 출발점이 된다', () => {
     const a = buildProfile([axisResult(AXES[0], decided)!]);
     const b = buildProfile([axisResult(AXES[0], tentative)!]);
     expect(b.results[0].tentative).toBe(true);
-    expect(Math.abs(b.acc.vivid)).toBeLessThanOrEqual(Math.abs(a.acc.vivid));
+    expect(Math.abs(b.acc.reach)).toBeLessThanOrEqual(Math.abs(a.acc.reach));
   });
 });
 

@@ -34,7 +34,7 @@ function result(id: string, name: string, pull: Pull, tentative = false): AxisRe
     summary: '',
     clause: '',
     short: '',
-    imprint: { vivid: 0, sharp: 0, modern: 0, outward: 0 },
+    imprint: { reach: 0, form: 0, modern: 0, outward: 0 },
     pull,
     tentative,
     done: true,

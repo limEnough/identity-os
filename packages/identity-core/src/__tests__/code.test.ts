@@ -213,7 +213,7 @@ describe('한가운데와 분포', () => {
   });
 
   it('한가운데는 0이 아니다 — 그게 이 계산의 요점이다', () => {
-    for (const key of ['vivid', 'sharp', 'modern', 'outward'] as const) {
+    for (const key of ['reach', 'form', 'modern', 'outward'] as const) {
       expect(CENTER[key], key).toBeGreaterThan(0);
     }
   });

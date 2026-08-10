@@ -86,7 +86,7 @@ export function daysToSeason(entries: ChronicleEntry[], now: number): number {
 
 /** 두 판 사이에서 움직인 갈래 */
 export interface CodeShift {
-  /** 갈래의 이름 — "고요함 ↔ 생동감" */
+  /** 갈래의 이름 — "머무름 ↔ 뻗어감" */
   title: string;
   from: string;
   to: string;
