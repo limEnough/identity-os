@@ -125,7 +125,10 @@ function GuideRoute() {
   }, [now, code.sealed, journey.profile, fromUrl, chronicle]);
 
   /** 여덟 축을 다 걸었을 때만 열리는 맺음 — 그 전에는 null */
-  const closing = useMemo(() => buildClosing(journey.profile), [journey.profile]);
+  const closing = useMemo(
+    () => buildClosing(journey.profile),
+    [journey.profile],
+  );
 
   // 뿌리가 없으면 가이드북도 없다 (불변식: Identity 먼저)
   useEffect(() => {
@@ -162,11 +165,8 @@ function GuideRoute() {
         name: def.name,
         tone: "filled",
         body: axisNote(def, replay.state, profile),
-        // 첫 축의 결과는 문장이 이미 말하고 있다 — 카드로 한 번 더 펼치지 않는다
-        onResult:
-          replay.state.outcome && def.id !== "identity"
-            ? () => setOpenId(def.id)
-            : undefined,
+        // 걸어온 축은 예외 없이 제자리에서 결과가 열린다 — 첫 축도 마찬가지다
+        onResult: replay.state.outcome ? () => setOpenId(def.id) : undefined,
       };
     }
     if (status === "current") {

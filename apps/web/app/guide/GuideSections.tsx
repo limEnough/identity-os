@@ -2,7 +2,7 @@
 
 import { accentFill, cn, surfaceLift } from "@identity-os/design-system";
 
-/** 여덟 섹션이 가질 수 있는 상태 — 채워짐 · 잠김 · 방금 열림 */
+/** 여덟 섹션이 가질 수 있는 상태 — 채워짐 · 결과보기 · 잠김 · 방금 열림 */
 type Tone = "filled" | "locked" | "open";
 
 export interface GuideSection {
@@ -29,7 +29,7 @@ const tones: Record<
     card: "border-rim shadow-filled",
     body: "text-chip",
     tag: "bg-tint text-chip",
-    label: "작성됨",
+    label: "결과보기",
   },
   locked: {
     card: "border-line opacity-55",
@@ -62,57 +62,58 @@ export function GuideSections({ sections }: { sections: GuideSection[] }) {
   return (
     <div className="mt-9.5 grid gap-2.5">
       {sections.map((section) => {
-          const tone = tones[section.tone];
-          const inner = (
-            <>
-              <span className="w-5 flex-none self-start pt-0.75 text-label font-semibold text-sub">
-                {section.no}
+        const tone = tones[section.tone];
+        const inner = (
+          <>
+            <span className="w-5 flex-none self-start pt-0.75 text-label font-semibold text-sub">
+              {section.no}
+            </span>
+            <span className="min-w-0">
+              <span className="text-body font-semibold">{section.name}</span>
+              <span className={cn("mt-1.25 block text-caption", tone.body)}>
+                {section.body}
               </span>
-              <span className="min-w-0">
-                <span className="text-body font-semibold">{section.name}</span>
-                <span className={cn("mt-1.25 block text-caption", tone.body)}>
-                  {section.body}
-                </span>
-              </span>
-            </>
-          );
+            </span>
+          </>
+        );
 
-          // 걸어 들어가는 카드는 통째로 버튼이다 — 그 안에 또 버튼을 둘 수는 없다.
-          // 다행히 '방금 열림'과 '결과 있음'은 같은 카드에서 겹치지 않는다.
-          if (section.onOpen) {
-            return (
-              <button
-                key={section.no}
-                type="button"
-                className={cn(shape, tone.card, surfaceLift, "w-full")}
-                onClick={section.onOpen}
-              >
-                {inner}
-                <span className={cn(tagShape, tone.tag)}>{tone.label}</span>
-              </button>
-            );
-          }
-
+        // 걸어 들어가는 카드는 통째로 버튼이다 — 그 안에 또 버튼을 둘 수는 없다.
+        // 다행히 '방금 열림'과 '결과 있음'은 같은 카드에서 겹치지 않는다.
+        if (section.onOpen) {
           return (
-            <div key={section.no} className={cn(shape, tone.card)}>
+            <button
+              key={section.no}
+              type="button"
+              className={cn(shape, tone.card, surfaceLift, "w-full")}
+              onClick={section.onOpen}
+            >
               {inner}
-              {section.onResult ? (
-                <button
-                  type="button"
-                  className={cn(
-                    "ml-auto flex-none rounded-btn border border-chip-line bg-tint px-3.5 py-2.5 text-caption font-semibold whitespace-nowrap text-chip",
-                    surfaceLift,
-                  )}
-                  onClick={section.onResult}
-                >
-                  결과 보기
-                </button>
-              ) : (
-                <span className={cn(tagShape, tone.tag)}>{tone.label}</span>
-              )}
-            </div>
+              <span className={cn(tagShape, tone.tag)}>{tone.label}</span>
+            </button>
           );
-        })}
+        }
+
+        if (section.onResult) {
+          return (
+            <button
+              key={section.no}
+              type="button"
+              className={cn(shape, tone.card, surfaceLift, "w-full")}
+              onClick={section.onResult}
+            >
+              {inner}
+              <span className={cn(tagShape, tone.tag)}>{tone.label}</span>
+            </button>
+          );
+        }
+
+        return (
+          <div key={section.no} className={cn(shape, tone.card)}>
+            {inner}
+            <span className={cn(tagShape, tone.tag)}>{tone.label}</span>
+          </div>
+        );
+      })}
     </div>
   );
 }
