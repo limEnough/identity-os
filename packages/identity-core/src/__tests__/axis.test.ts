@@ -228,6 +228,22 @@ describe('좌표와 결과', () => {
     }
   });
 
+  /**
+   * 변주는 앞선 축이 쌓인 만큼 열린다(`outcomeVariant`: `1 + 걸어온 축 수`).
+   * 그러니 여덟째 축은 여덟 갈래까지 열 수 있어야 한다 — 데이터가 모자라면
+   * "뒤 축일수록 세밀해진다"는 말이 뒤로 갈수록 거짓이 된다.
+   */
+  it('축 번호만큼의 변주를 갖는다 — 열리는데 비어 있지 않도록', () => {
+    AXES.forEach((def, i) => {
+      for (const outcome of def.outcomes) {
+        const at = `${def.id}/${outcome.name}`;
+        expect(outcome.variants.length, at).toBeGreaterThanOrEqual(i + 1);
+        // 같은 말을 두 번 두면 열린 자리가 비어 있는 것과 같다
+        expect(new Set(outcome.variants).size, at).toBe(outcome.variants.length);
+      }
+    });
+  });
+
   it('모든 축의 결과는 잘 통하는 자리와 힘든 자리를 셋씩 갖는다', () => {
     // 칭찬만 하는 거울은 아무것도 가르쳐주지 않는다 — 여덟 축 모두에서 양쪽을 적는다
     for (const def of AXES) {
