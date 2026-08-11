@@ -114,6 +114,8 @@
   /* 화면이 들어설 때 — 살짝 아래에서 떠오른다 */
   --animate-rise: rise 0.7s ease;
   --animate-rise-fast: rise 0.3s ease;
+  /* 서랍 — 화면 밖에 접혀 있다가 옆에서 들어온다 */
+  --animate-slide-in: slide-in 0.28s ease;
   /* 붙박이(fixed) 요소는 떠오르지 않는다 — transform이 걸리면 기준이 뷰포트에서
      조상으로 바뀌어 플로팅 CTA가 함께 움직이기 때문. 그래서 순수 페이드만. */
   --animate-appear: appear 0.7s ease;
@@ -160,6 +162,14 @@
     to {
       opacity: 1;
       transform: none;
+    }
+  }
+  @keyframes slide-in {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
     }
   }
   @keyframes appear {

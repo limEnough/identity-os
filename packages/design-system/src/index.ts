@@ -8,6 +8,7 @@
 /* 골격 */
 export { AppShell, Screen } from "./layout/Screen";
 export { Aurora } from "./layout/Aurora";
+export { Drawer } from "./layout/Drawer";
 export { FloatingCta } from "./layout/FloatingCta";
 
 /* 낱개 */
@@ -15,6 +16,7 @@ export { Button, SkipLink } from "./primitives/Button";
 export { Chip, ChipRow, InsightChips } from "./primitives/Chip";
 export { CopyButton } from "./primitives/CopyButton";
 export { Modal, ModalActions } from "./primitives/Modal";
+export { Tooltip } from "./primitives/Tooltip";
 export {
   Brand,
   Desc,
@@ -68,6 +70,7 @@ export {
   CATEGORY_ICONS,
   ChatIcon,
   CoatIcon,
+  MenuIcon,
   NoteIcon,
   WindowIcon,
 } from "./icons";
