@@ -16,7 +16,13 @@ import {
   Screen,
 } from "@identity-os/design-system";
 import { AXES } from "@identity-os/identity-core";
+import type { ChronicleEntry } from "@identity-os/identity-core";
+import {
+  JourneyDrawer,
+  JourneyMenuButton,
+} from "./_components/JourneyMenu";
 import { ResumeBanner } from "./_components/ResumeBanner";
+import { loadChronicle } from "./_lib/keepsake";
 import {
   axisStore,
   forgetAll,
@@ -35,11 +41,17 @@ export default function IntroPage() {
   const first = AXES[0];
   const store = useMemo(() => axisStore(first), [first]);
   const [resume, setResume] = useState<Resume | null>(null);
+  /** 끝까지 걸었던 판들 — 하나라도 있으면 재방문이다 */
+  const [chronicle, setChronicle] = useState<ChronicleEntry[]>([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  /** 손잡이가 새로 생겼다는 것을 한 번은 알린다 — 열어보면 할 일을 다한 말이다 */
+  const [hinted, setHinted] = useState(true);
 
   // 기억은 브라우저에만 있으므로 화면이 그려진 뒤에 되짚는다
   useEffect(() => {
     setResume(loadResume());
+    setChronicle(loadChronicle());
   }, []);
 
   const confirmStart = () => {
@@ -50,7 +62,22 @@ export default function IntroPage() {
 
   return (
     <Screen>
-      <Brand>IDENTITY OS</Brand>
+      {/* 손잡이는 머리표 줄 오른쪽 끝에 — 완주한 판이 있는 사람에게만 놓인다 */}
+      <div className="relative">
+        <Brand>IDENTITY OS</Brand>
+        {chronicle.length > 0 && (
+          <div className="absolute -top-2 right-0">
+            <JourneyMenuButton
+              hinted={hinted && !menuOpen}
+              onOpen={() => {
+                setMenuOpen(true);
+                setHinted(false);
+              }}
+              onDismissHint={() => setHinted(false)}
+            />
+          </div>
+        )}
+      </div>
 
       <OrbStage className="mt-8.5 mb-4.5">
         <Orb />
@@ -88,6 +115,19 @@ export default function IntroPage() {
       <FloatingCta>
         <Button onClick={() => setConfirmOpen(true)}>여정 시작하기</Button>
       </FloatingCta>
+
+      {/* 서랍은 떠오르지 않는 층에 둔다 — 변형이 걸린 조상 아래면 붙박이의 기준이 어긋난다 */}
+      {menuOpen && (
+        <JourneyDrawer
+          entries={chronicle}
+          onClose={() => setMenuOpen(false)}
+          // 서랍을 먼저 닫는다 — 스크롤 잠금이 풀린 뒤에 새 화면이 그려지도록
+          onOpenRun={(entry) => {
+            setMenuOpen(false);
+            router.push(`/guide?${entry.query}`);
+          }}
+        />
+      )}
 
       {confirmOpen && (
         <Modal onClose={() => setConfirmOpen(false)}>
