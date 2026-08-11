@@ -15,6 +15,7 @@ import {
   Orb,
   OrbStage,
   Screen,
+  Tooltip,
 } from "@identity-os/design-system";
 import { AXES } from "@identity-os/identity-core";
 import type { ChronicleEntry } from "@identity-os/identity-core";
@@ -22,7 +23,6 @@ import {
   JourneyDrawer,
   JourneyMenuButton,
 } from "./_components/JourneyMenu";
-import { ResumeBanner } from "./_components/ResumeBanner";
 import { loadSealedRuns } from "./_lib/keepsake";
 import {
   axisStore,
@@ -48,6 +48,8 @@ export default function IntroPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   /** 손잡이가 새로 생겼다는 것을 한 번은 알린다 — 열어보면 할 일을 다한 말이다 */
   const [hinted, setHinted] = useState(true);
+  /** 남은 발자국을 알리는 말 — 눌러서 접을 수 있다 */
+  const [noted, setNoted] = useState(true);
 
   // 기억은 브라우저에만 있으므로 화면이 그려진 뒤에 되짚는다
   useEffect(() => {
@@ -108,13 +110,14 @@ export default function IntroPage() {
         여정의 끝에 남는 것은 <strong>나의 문장</strong>입니다.
       </Bubble>
 
-      {/* 알리는 일만 한다 — 고르는 일은 아래 CTA가 맡는다 */}
-      {resume && <ResumeBanner steps={resume.steps} axisName={resume.axisName} />}
-
       {/**
        * 걷다 만 판이 있으면 **갈래 둘**을 나란히 놓는다.
        * 세로로 쌓으면 위가 먼저인 것처럼 읽히지만, 이어 걷기와 새로 떠나기는
        * 순서가 아니라 둘 중 하나다.
+       *
+       * 발자국을 알리는 말은 **누를 버튼 바로 위**에 붙는다. 한때 화면 한가운데
+       * 배너로 놓았는데, 알리는 자리와 고르는 자리가 멀어 눈이 두 번 움직였다 —
+       * 무엇이 남아 있는지와 그래서 무엇을 누르면 되는지는 한자리에 있어야 한다.
        */}
       <FloatingCta>
         {resume ? (
@@ -122,7 +125,20 @@ export default function IntroPage() {
             <Button variant="ghost" onClick={() => setConfirmOpen(true)}>
               새로 떠나기
             </Button>
-            <Button onClick={() => router.push(resume.href)}>이어서 걷기</Button>
+            <span className="relative">
+              {noted && (
+                <Tooltip placement="above" onDismiss={() => setNoted(false)}>
+                  지난 여정의 발자국이 남아 있어요 — {resume.steps}걸음까지
+                  걸어왔네요.
+                  {resume.axisName
+                    ? ` 다음은 ${resume.axisName}이에요.`
+                    : " 여덟 축을 모두 걸었어요."}
+                </Tooltip>
+              )}
+              <Button onClick={() => router.push(resume.href)}>
+                이어서 걷기
+              </Button>
+            </span>
           </CtaRow>
         ) : (
           <Button onClick={() => setConfirmOpen(true)}>여정 시작하기</Button>
