@@ -141,6 +141,23 @@ export function footprintsFromQuery(
   return footprints;
 }
 
+/** 적어둔 주소 조각에서 발자국을 되짚는다 — 연표에 남은 지난 판을 읽을 때 */
+export const footprintsFromSearch = (search: string): Footprints => {
+  const params = new URLSearchParams(search);
+  return footprintsFromQuery((p) => params.get(p));
+};
+
+/**
+ * 그 발자국이 **여덟 축을 다 걸은 것**인지.
+ *
+ * 연표에는 봉인된 판만 들어가지만(§sealRun), 읽는 쪽에서 한 번 더 묻는다.
+ * 저장은 브라우저에 있고 판의 모양은 축 데이터가 바뀌면 함께 바뀐다 —
+ * 예전 형식이나 손상된 값이 '완주'로 놓이면 사용자가 걷지 않은 판을 걸었다고
+ * 읽게 되므로, 완주라고 부르기 전에 실제로 걸어본다.
+ */
+export const isSealedQuery = (search: string): boolean =>
+  walkJourney(footprintsFromSearch(search)).current === null;
+
 /** 축 하나의 주소 — 걸어온 발자국을 모두 데리고 간다 */
 export function axisHref(def: AxisDef, footprints: Footprints): string {
   const query = journeyQuery(footprints);

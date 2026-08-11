@@ -7,6 +7,8 @@ import {
   canWalk,
   footprintsFromQuery,
   guideHref,
+  footprintsFromSearch,
+  isSealedQuery,
   journeyQuery,
   journeyStep,
   replayAxis,
@@ -181,5 +183,26 @@ describe('주소', () => {
     expect(resumeHref({ identity: [0, 0] })).toBe('/identity?i=0.0');
     expect(resumeHref(walked(2))).toBe(`/guide?${journeyQuery(walked(2))}`);
     expect(resumeHref({})).toBe('/guide');
+  });
+
+  it('적어둔 주소 조각에서 발자국을 되짚는다', () => {
+    const footprints = { ...walked(2), communication: [1, 2] };
+    expect(footprintsFromSearch(journeyQuery(footprints))).toEqual(footprints);
+    expect(footprintsFromSearch('')).toEqual({});
+  });
+
+  /**
+   * 연표에 '완주'로 놓을 자격을 읽는 쪽에서 한 번 더 묻는다.
+   * 걷다 만 판이 완주로 세어지면 사용자는 걷지 않은 것을 걸었다고 읽게 된다.
+   */
+  it('여덟 축을 다 걸은 주소만 완주로 읽는다', () => {
+    expect(isSealedQuery(journeyQuery(walked(AXES.length)))).toBe(true);
+    for (const n of [0, 1, 4, 7]) {
+      expect(isSealedQuery(journeyQuery(walked(n))), `${n}축`).toBe(false);
+    }
+    // 마지막 축을 걷다 만 판도 완주가 아니다
+    const halfLast = { ...walked(AXES.length - 1), career: [0, 0, 0] };
+    expect(isSealedQuery(journeyQuery(halfLast))).toBe(false);
+    expect(isSealedQuery('')).toBe(false);
   });
 });

@@ -72,6 +72,8 @@ export {
   journeyQuery,
   journeyStep,
   footprintsFromQuery,
+  footprintsFromSearch,
+  isSealedQuery,
   walkJourney,
   canWalk,
   JOURNEY_STEPS,
