@@ -1,7 +1,8 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useGo } from "../_components/Navigating";
 import {
   buildCode,
   CODE_AXES,
@@ -40,7 +41,7 @@ import { lastSealedCode } from "../_lib/keepsake";
  * 여기서 누구도 등급을 받지 않는다.
  */
 function CodesRoute() {
-  const router = useRouter();
+  const go = useGo();
   const searchParams = useSearchParams();
 
   const fromQuery = searchParams.get("me");
@@ -141,13 +142,13 @@ function CodesRoute() {
 
       <FloatingCta>
         {mine && (
-          <SkipLink onClick={() => router.push(`/together?me=${mine}`)}>
+          <SkipLink onClick={() => go(`/together?me=${mine}`)}>
             다른 사람과 겹쳐보기
           </SkipLink>
         )}
         <Button
           variant="ghost"
-          onClick={() => router.push(guideHref(footprints))}
+          onClick={() => go(guideHref(footprints))}
         >
           가이드북으로 돌아가기
         </Button>

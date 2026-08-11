@@ -1,7 +1,8 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useGo } from "../_components/Navigating";
 import {
   buildCode,
   codeName,
@@ -41,7 +42,7 @@ import { lastSealedCode } from "../_lib/keepsake";
  * 오가는 것은 네 글자뿐이다. 발자국도 이름도 링크에 싣지 않는다.
  */
 function TogetherRoute() {
-  const router = useRouter();
+  const go = useGo();
   const searchParams = useSearchParams();
 
   const invited = searchParams.get("with");
@@ -215,19 +216,19 @@ function TogetherRoute() {
 
       <FloatingCta>
         {mine && yours && (
-          <SkipLink onClick={() => router.push(`/together?me=${mine}`)}>
+          <SkipLink onClick={() => go(`/together?me=${mine}`)}>
             내 초대 링크 만들기
           </SkipLink>
         )}
         {mine ? (
           <Button
             variant="ghost"
-            onClick={() => router.push(guideHref(footprints))}
+            onClick={() => go(guideHref(footprints))}
           >
             가이드북으로 돌아가기
           </Button>
         ) : (
-          <Button onClick={() => router.push("/")}>여정 시작하기</Button>
+          <Button onClick={() => go("/")}>여정 시작하기</Button>
         )}
       </FloatingCta>
     </Screen>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useGo } from "./_components/Navigating";
 import {
   Brand,
   Bubble,
@@ -37,7 +37,7 @@ import {
  * 확인하면 발자국을 이 브라우저에만 기억해둔다 (닫았다 와도 걷던 길 그대로).
  */
 export default function IntroPage() {
-  const router = useRouter();
+  const go = useGo();
   // 여정은 언제나 첫 축에서 시작한다 — 순서가 곧 의존이므로
   const first = AXES[0];
   const store = useMemo(() => axisStore(first), [first]);
@@ -60,7 +60,7 @@ export default function IntroPage() {
   const confirmStart = () => {
     forgetAll();
     store.save([]);
-    router.push(`/${first.id}`);
+    go(`/${first.id}`);
   };
 
   /**
@@ -135,7 +135,7 @@ export default function IntroPage() {
                     : " 여덟 축을 모두 걸었어요."}
                 </Tooltip>
               )}
-              <Button onClick={() => router.push(resume.href)}>
+              <Button onClick={() => go(resume.href)}>
                 이어서 걷기
               </Button>
             </span>
@@ -154,11 +154,11 @@ export default function IntroPage() {
           // 서랍을 먼저 닫는다 — 스크롤 잠금이 풀린 뒤에 새 화면이 그려지도록
           onOpenRun={(entry) => {
             setMenuOpen(false);
-            router.push(`/guide?${entry.query}`);
+            go(`/guide?${entry.query}`);
           }}
           onResume={() => {
             setMenuOpen(false);
-            if (resume) router.push(resume.href);
+            if (resume) go(resume.href);
           }}
         />
       )}

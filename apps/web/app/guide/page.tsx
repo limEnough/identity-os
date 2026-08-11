@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useGo } from "../_components/Navigating";
 import {
   AXES,
   appendEntry,
@@ -71,6 +72,7 @@ import {
  */
 function GuideRoute() {
   const router = useRouter();
+  const go = useGo();
   const searchParams = useSearchParams();
 
   const fromUrl = useMemo<Footprints>(
@@ -162,7 +164,7 @@ function GuideRoute() {
   const value = journey.profile.results[0]?.name ?? "";
   const front = journey.current;
 
-  const goAxis = (def: AxisDef) => router.push(axisHref(def, fromUrl));
+  const goAxis = (def: AxisDef) => go(axisHref(def, fromUrl));
 
   /** 다시 걷기는 그 축부터 뒤를 지운 뒤에 — 남겨두면 근거를 잃은 결과가 남는다 */
   const rewalk = (def: AxisDef) => {
@@ -172,12 +174,12 @@ function GuideRoute() {
       if (step.def.id === def.id) break;
       if (step.seq.length > 0) kept[step.def.id] = step.seq;
     }
-    router.push(axisHref(def, kept));
+    go(axisHref(def, kept));
   };
 
   const restart = () => {
     forgetAll();
-    router.push("/");
+    go("/");
   };
 
   const sectionOf = (step: JourneyStep): GuideSection => {
@@ -318,8 +320,8 @@ function GuideRoute() {
         <NoteModal label="나의 네 글자" onClose={() => setCodeOpen(false)}>
           <CodeNote code={code} />
           <PlayLinks
-            onMap={() => router.push(`/codes?me=${code.key}`)}
-            onTogether={() => router.push(`/together?me=${code.key}`)}
+            onMap={() => go(`/codes?me=${code.key}`)}
+            onTogether={() => go(`/together?me=${code.key}`)}
           />
         </NoteModal>
       )}
@@ -354,11 +356,11 @@ function GuideRoute() {
           onClose={() => setMenuOpen(false)}
           onOpenRun={(entry) => {
             setMenuOpen(false);
-            router.push(`/guide?${entry.query}`);
+            go(`/guide?${entry.query}`);
           }}
           onResume={() => {
             setMenuOpen(false);
-            if (resume) router.push(resume.href);
+            if (resume) go(resume.href);
           }}
         />
       )}

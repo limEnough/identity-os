@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useGo } from "../_components/Navigating";
 import {
   axisById,
   axisHref,
@@ -31,6 +32,7 @@ import { axisStore, loadFootprints } from "./progress";
  */
 function AxisScreen({ def }: { def: AxisDef }) {
   const router = useRouter();
+  const go = useGo();
   const searchParams = useSearchParams();
 
   /** 주소에 실려온 발자국이 우선, 없으면 브라우저 기억에서 */
@@ -74,9 +76,9 @@ function AxisScreen({ def }: { def: AxisDef }) {
     (seq: number[]) => {
       store.save(seq);
       // 축을 끝내면 가이드북으로 — 다음 축은 거기서 열린다(여정의 순서)
-      router.push(`/guide?${query(seq)}`);
+      go(`/guide?${query(seq)}`);
     },
-    [query, router, store],
+    [query, go, store],
   );
 
   if (!allowed) return null;
@@ -92,7 +94,7 @@ function AxisScreen({ def }: { def: AxisDef }) {
         onComplete={onComplete}
         // 걸음마다 이미 브라우저에 적혀 있으므로(onSeqChange) 나가기만 하면 된다 —
         // 인트로가 발자국을 되짚어 「이어서 걷기」를 내민다
-        onPause={() => router.push("/")}
+        onPause={() => go("/")}
       />
     </main>
   );

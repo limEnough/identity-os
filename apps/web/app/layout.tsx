@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { AppShell, Aurora, SerifFontGate } from "@identity-os/design-system";
+import { NavProvider } from "./_components/Navigating";
 import "@identity-os/design-system/styles.css";
 
 export const metadata: Metadata = {
@@ -42,7 +43,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {/* 여정 초입에 손글씨 서체를 미리 받아둔다 — 문장이 쓰이는 건 한참 뒤이므로 */}
         <SerifFontGate />
         <Aurora />
-        <AppShell>{children}</AppShell>
+        {/* 가림막은 AppShell 밖에 — 폭에 갇히지 않고 화면을 통째로 덮어야 하므로 */}
+        <NavProvider>
+          <AppShell>{children}</AppShell>
+        </NavProvider>
       </body>
     </html>
   );
