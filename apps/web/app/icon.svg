@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <title>Identity OS</title>
+  <!--
+    파비콘은 오브다 — 이 제품의 얼굴이 로고가 아니라 곁에서 기다리는 존재이므로.
+    그림은 design-system의 `orb-skin`(밑색 하나 + 빛 세 덩이)과 `Orb`의 눈을
+    그대로 옮긴 것이라, 탭에 뜨는 것과 화면 안에 있는 것이 같은 얼굴이다.
+
+    16px에서도 읽히도록 숨(animate-breathe)과 깜빡임(animate-blink)은 두지 않는다 —
+    작은 자리에서 움직이는 아이콘은 알아보기 어려운 데다 탭마다 계속 돈다.
+
+    곁의 icon1.png는 이 파일에서 뽑은 64px 폴백이다. SVG 파비콘을 읽지 못하는
+    브라우저(Safari 16.4 이전 등)를 위한 것이고, 이름의 1은 Next의 규칙이다 —
+    같은 폴더에 icon.*가 둘이면 확장자 우선순위로 하나만 골라 PNG가 SVG를 덮는다.
+    번호를 붙여야 둘 다 <link>로 나간다. 이 그림을 고치면 함께 다시 뽑을 것:
+
+      npx sharp-cli -i app/icon.svg -o app/icon1.png resize 64 64
+      (또는 sharp로: sharp(svg, {density:600}).resize(64,64).png())
+  -->
+  <defs>
+    <!-- 밑색 — linear-gradient(135deg, …): 왼쪽 위에서 오른쪽 아래로 -->
+    <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4d86ff" />
+      <stop offset="55%" stop-color="#6a5bff" />
+      <stop offset="100%" stop-color="#4fc0ea" />
+    </linearGradient>
+
+    <!-- 빛 세 덩이 — 반지름은 각 중심에서 가장 먼 모서리까지의 비율 -->
+    <radialGradient id="lit1" gradientUnits="userSpaceOnUse" cx="17.9" cy="14.1" r="28.5">
+      <stop offset="0%" stop-color="#96ebff" stop-opacity=".95" />
+      <stop offset="100%" stop-color="#96ebff" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="lit2" gradientUnits="userSpaceOnUse" cx="47.4" cy="11.5" r="33.9">
+      <stop offset="0%" stop-color="#b285ff" stop-opacity=".9" />
+      <stop offset="100%" stop-color="#b285ff" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="lit3" gradientUnits="userSpaceOnUse" cx="35.2" cy="54.4" r="33.7">
+      <stop offset="0%" stop-color="#3fd6c6" stop-opacity=".85" />
+      <stop offset="100%" stop-color="#3fd6c6" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- 오브의 살결 — 빛이 밖으로 새지 않도록 -->
+    <clipPath id="skinClip">
+      <rect width="64" height="64" rx="26.9" ry="26.9" />
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#skinClip)">
+    <rect width="64" height="64" fill="url(#skin)" />
+    <rect width="64" height="64" fill="url(#lit1)" />
+    <rect width="64" height="64" fill="url(#lit2)" />
+    <rect width="64" height="64" fill="url(#lit3)" />
+  </g>
+
+  <!-- 두 눈 — 화면의 오브와 같은 자리(가로 10% · 세로 20% · 위에서 42%) -->
+  <g fill="#fff">
+    <rect x="21.1" y="26.9" width="6.4" height="12.8" rx="3.2" />
+    <rect x="36.5" y="26.9" width="6.4" height="12.8" rx="3.2" />
+  </g>
+</svg>
