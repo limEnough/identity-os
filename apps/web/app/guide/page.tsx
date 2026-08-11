@@ -40,8 +40,18 @@ import {
   SkipLink,
 } from "@identity-os/design-system";
 import { OutcomeCard } from "@identity-os/feature-axis";
-import { forgetAll, forgetFrom, loadFootprints } from "../_lib/progress";
-import { loadChronicle, saveChronicle } from "../_lib/keepsake";
+import {
+  forgetAll,
+  forgetFrom,
+  loadFootprints,
+  loadResume,
+  type Resume,
+} from "../_lib/progress";
+import { loadChronicle, loadSealedRuns, saveChronicle } from "../_lib/keepsake";
+import {
+  JourneyDrawer,
+  JourneyMenuButton,
+} from "../_components/JourneyMenu";
 import { GuideSections, type GuideSection } from "./GuideSections";
 import { NoteBoard, NoteModal, type GuideNote } from "./GuideNotes";
 import {
@@ -94,11 +104,24 @@ function GuideRoute() {
   const [codeOpen, setCodeOpen] = useState(false);
   /** 축하 화면이 떠 있는지 — 판을 봉인하는 그 순간에만 켜진다 */
   const [cheering, setCheering] = useState(false);
+  /** 지난 여정 서랍 — 인트로와 같은 손잡이가 여기에도 놓인다 */
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [runs, setRuns] = useState<ChronicleEntry[]>([]);
+  const [resume, setResume] = useState<Resume | null>(null);
 
   useEffect(() => {
     setChronicle(loadChronicle());
     setNow(Date.now());
   }, []);
+
+  /**
+   * 서랍이 읽는 것은 **저장된 것**이라, 이 판이 봉인되어 연표가 자라면 다시 읽는다.
+   * 방금 끝낸 판이 목록에 없으면 "완주 기록"이라는 말이 어긋난다.
+   */
+  useEffect(() => {
+    setRuns(loadSealedRuns());
+    setResume(loadResume());
+  }, [chronicle]);
 
   const identity = journey.steps[0];
   const rooted = identity.status === "done";
@@ -251,7 +274,19 @@ function GuideRoute() {
 
   return (
     <Screen>
-      <Brand>MY LIFE GUIDE</Brand>
+      {/* 인트로와 같은 자리의 같은 손잡이 — 끝낸 판이 있을 때만 */}
+      <div className="relative">
+        <Brand>MY LIFE GUIDE</Brand>
+        {runs.length > 0 && (
+          <div className="absolute -top-2 right-0">
+            <JourneyMenuButton
+              hinted={false}
+              onOpen={() => setMenuOpen(true)}
+              onDismissHint={() => {}}
+            />
+          </div>
+        )}
+      </div>
       <Heading as="h2">
         「{value}」{eul(value)} 아는 사람의
         <br />
@@ -309,6 +344,23 @@ function GuideRoute() {
             </SkipLink>
           )}
         </NoteModal>
+      )}
+
+      {/* 서랍은 떠오르지 않는 층에 — 변형이 걸린 조상 아래면 붙박이의 기준이 어긋난다 */}
+      {menuOpen && (
+        <JourneyDrawer
+          runs={runs}
+          resume={resume}
+          onClose={() => setMenuOpen(false)}
+          onOpenRun={(entry) => {
+            setMenuOpen(false);
+            router.push(`/guide?${entry.query}`);
+          }}
+          onResume={() => {
+            setMenuOpen(false);
+            if (resume) router.push(resume.href);
+          }}
+        />
       )}
 
       {/* 판을 봉인하는 그 순간에만 — 삼 초 뒤 스스로 물러난다 */}

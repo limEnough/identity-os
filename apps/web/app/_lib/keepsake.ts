@@ -1,3 +1,4 @@
+import { isSealedQuery } from "@identity-os/identity-core";
 import type { ChronicleEntry } from "@identity-os/identity-core";
 
 /**
@@ -41,6 +42,16 @@ export const loadChronicle = (): ChronicleEntry[] =>
   read<ChronicleEntry>(CHRONICLE_KEY);
 export const saveChronicle = (entries: ChronicleEntry[]) =>
   write(CHRONICLE_KEY, entries);
+
+/**
+ * **끝까지 걸은 판만** — 지난 여정 목록이 읽는 것.
+ *
+ * 연표에는 봉인된 판만 들어가지만, 걸어보고 한 번 더 확인한다(§isSealedQuery).
+ * 브라우저에 남은 값이라 예전 형식이 섞일 수 있고, 걷다 만 판이 '완주'로 놓이면
+ * 사용자가 걷지 않은 것을 걸었다고 읽게 된다.
+ */
+export const loadSealedRuns = (): ChronicleEntry[] =>
+  loadChronicle().filter((entry) => isSealedQuery(entry.query));
 
 /** 지난 판의 네 글자 — 겹쳐보기가 상대 없이도 나를 알아보는 통로 */
 export function lastSealedCode(): string | null {

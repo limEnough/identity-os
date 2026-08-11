@@ -90,6 +90,9 @@ function AxisScreen({ def }: { def: AxisDef }) {
         initialSeq={step.seq}
         onSeqChange={onSeqChange}
         onComplete={onComplete}
+        // 걸음마다 이미 브라우저에 적혀 있으므로(onSeqChange) 나가기만 하면 된다 —
+        // 인트로가 발자국을 되짚어 「이어서 걷기」를 내민다
+        onPause={() => router.push("/")}
       />
     </main>
   );

@@ -6,6 +6,7 @@ import {
   Brand,
   Bubble,
   Button,
+  CtaRow,
   Desc,
   FloatingCta,
   Heading,
@@ -22,7 +23,7 @@ import {
   JourneyMenuButton,
 } from "./_components/JourneyMenu";
 import { ResumeBanner } from "./_components/ResumeBanner";
-import { loadChronicle } from "./_lib/keepsake";
+import { loadSealedRuns } from "./_lib/keepsake";
 import {
   axisStore,
   forgetAll,
@@ -41,8 +42,8 @@ export default function IntroPage() {
   const first = AXES[0];
   const store = useMemo(() => axisStore(first), [first]);
   const [resume, setResume] = useState<Resume | null>(null);
-  /** 끝까지 걸었던 판들 — 하나라도 있으면 재방문이다 */
-  const [chronicle, setChronicle] = useState<ChronicleEntry[]>([]);
+  /** 끝까지 걸은 판들 — 하나라도 있으면 재방문이다 */
+  const [runs, setRuns] = useState<ChronicleEntry[]>([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   /** 손잡이가 새로 생겼다는 것을 한 번은 알린다 — 열어보면 할 일을 다한 말이다 */
@@ -51,7 +52,7 @@ export default function IntroPage() {
   // 기억은 브라우저에만 있으므로 화면이 그려진 뒤에 되짚는다
   useEffect(() => {
     setResume(loadResume());
-    setChronicle(loadChronicle());
+    setRuns(loadSealedRuns());
   }, []);
 
   const confirmStart = () => {
@@ -60,12 +61,18 @@ export default function IntroPage() {
     router.push(`/${first.id}`);
   };
 
+  /**
+   * 손잡이는 **끝까지 걸은 판이 있을 때만** 놓인다.
+   * 걷다 만 판은 하단 CTA가 맡는다 — 서랍을 열어야 이어 걸을 수 있으면 한 걸음이 는다.
+   */
+  const hasRuns = runs.length > 0;
+
   return (
     <Screen>
       {/* 손잡이는 머리표 줄 오른쪽 끝에 — 완주한 판이 있는 사람에게만 놓인다 */}
       <div className="relative">
         <Brand>IDENTITY OS</Brand>
-        {chronicle.length > 0 && (
+        {hasRuns && (
           <div className="absolute -top-2 right-0">
             <JourneyMenuButton
               hinted={hinted && !menuOpen}
@@ -101,30 +108,41 @@ export default function IntroPage() {
         여정의 끝에 남는 것은 <strong>나의 문장</strong>입니다.
       </Bubble>
 
-      {resume && (
-        <ResumeBanner
-          steps={resume.steps}
-          onResume={() => router.push(resume.href)}
-          onForget={() => {
-            forgetAll();
-            setResume(null);
-          }}
-        />
-      )}
+      {/* 알리는 일만 한다 — 고르는 일은 아래 CTA가 맡는다 */}
+      {resume && <ResumeBanner steps={resume.steps} axisName={resume.axisName} />}
 
+      {/**
+       * 걷다 만 판이 있으면 **갈래 둘**을 나란히 놓는다.
+       * 세로로 쌓으면 위가 먼저인 것처럼 읽히지만, 이어 걷기와 새로 떠나기는
+       * 순서가 아니라 둘 중 하나다.
+       */}
       <FloatingCta>
-        <Button onClick={() => setConfirmOpen(true)}>여정 시작하기</Button>
+        {resume ? (
+          <CtaRow>
+            <Button variant="ghost" onClick={() => setConfirmOpen(true)}>
+              새로 떠나기
+            </Button>
+            <Button onClick={() => router.push(resume.href)}>이어서 걷기</Button>
+          </CtaRow>
+        ) : (
+          <Button onClick={() => setConfirmOpen(true)}>여정 시작하기</Button>
+        )}
       </FloatingCta>
 
       {/* 서랍은 떠오르지 않는 층에 둔다 — 변형이 걸린 조상 아래면 붙박이의 기준이 어긋난다 */}
       {menuOpen && (
         <JourneyDrawer
-          entries={chronicle}
+          runs={runs}
+          resume={resume}
           onClose={() => setMenuOpen(false)}
           // 서랍을 먼저 닫는다 — 스크롤 잠금이 풀린 뒤에 새 화면이 그려지도록
           onOpenRun={(entry) => {
             setMenuOpen(false);
             router.push(`/guide?${entry.query}`);
+          }}
+          onResume={() => {
+            setMenuOpen(false);
+            if (resume) router.push(resume.href);
           }}
         />
       )}
@@ -137,7 +155,18 @@ export default function IntroPage() {
             걸어온 길은 이 브라우저에만 저장할게요.
             <br />
             <br />
-            <b className="text-accent">확인</b>을 누르면 여정이 시작돼요.
+            {/* 되돌릴 수 없는 것은 미리 말한다 — 완주한 판은 지워지지 않는다 */}
+            {resume ? (
+              <>
+                새로 떠나면 <b>걷던 {resume.steps}걸음은 지워져요.</b>
+                <br />
+                끝까지 걸었던 판은 그대로 남아요.
+              </>
+            ) : (
+              <>
+                <b className="text-accent">확인</b>을 누르면 여정이 시작돼요.
+              </>
+            )}
           </p>
           <ModalActions>
             <Button variant="ghost" onClick={() => setConfirmOpen(false)}>
