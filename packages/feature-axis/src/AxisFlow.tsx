@@ -23,6 +23,8 @@ export interface AxisFlowProps {
   onSeqChange: (seq: number[]) => void;
   /** 여섯 걸음 완주 시 호출 */
   onComplete: (seq: number[]) => void;
+  /** 걷다 멈추고 나갈 때 — 걸음은 이미 저장돼 있으므로 나가는 일만 한다 */
+  onPause?: () => void;
 }
 
 /**
@@ -40,6 +42,7 @@ export function AxisFlow({
   initialSeq,
   onSeqChange,
   onComplete,
+  onPause,
 }: AxisFlowProps) {
   const replay = useCallback(
     (seq: number[]) => replayAxis(def, seq, profile),
@@ -74,6 +77,7 @@ export function AxisFlow({
       }
       onChoose={choose}
       onSkip={() => choose(SKIP)}
+      onPause={onPause}
     />
   );
 }

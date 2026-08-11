@@ -16,10 +16,16 @@ import { overline } from "../recipes";
  * 자리라 언제든 스스로 닫을 수 있어야 한다.
  */
 export function Drawer({
+  side = "right",
   title,
   onClose,
   children,
 }: {
+  /**
+   * 어느 쪽에서 들어올지 — **손잡이가 있는 쪽**으로 맞춘다.
+   * 오른쪽 손잡이를 눌렀는데 왼쪽에서 열리면 화면을 가로질러 눈이 되돌아온다.
+   */
+  side?: "left" | "right";
   /** 서랍의 머리표 */
   title: string;
   onClose: () => void;
@@ -45,8 +51,10 @@ export function Drawer({
         aria-modal="true"
         aria-label={title}
         className={cn(
-          "flex h-full w-[86%] max-w-88 animate-slide-in flex-col",
-          "border-r border-line bg-card shadow-modal",
+          "flex h-full w-[86%] max-w-88 flex-col bg-card shadow-modal",
+          side === "right"
+            ? "ml-auto animate-slide-in-right border-l border-line"
+            : "animate-slide-in border-r border-line",
         )}
         onClick={(e) => e.stopPropagation()}
       >

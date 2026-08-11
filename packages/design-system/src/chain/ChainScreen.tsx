@@ -23,6 +23,7 @@ export function ChainScreen({
   aside,
   onChoose,
   onSkip,
+  onPause,
 }: {
   step: ChainStepView;
   totalSteps: number;
@@ -32,6 +33,8 @@ export function ChainScreen({
   aside?: ReactNode;
   onChoose: (choice: number) => void;
   onSkip: () => void;
+  /** 걷다 멈추고 나가는 길 — 없으면 놓이지 않는다 */
+  onPause?: () => void;
 }) {
   /** 명명 단계에서만 화면 대신 오브가 말한다 */
   const coachLines = step.kind === "naming" ? step.coachLines : undefined;
@@ -65,6 +68,20 @@ export function ChainScreen({
       )}
 
       <InsightChips chips={insights} />
+
+      {/**
+       * 나가는 길 — 걸음마다 이미 저장되므로 여기서 따로 저장할 것이 없다.
+       *
+       * 「넘어갈래요」와 같은 텍스트 버튼이지만 자리가 다르다: 그건 이 물음을
+       * 지나가는 길이라 선택지 바로 아래에 있고, 이건 여정을 잠시 두고 나가는
+       * 길이라 화면의 맨 끝, 선 하나 아래에 있다. 나가는 문은 조용해야 하지만
+       * 숨어 있어서도 안 된다.
+       */}
+      {onPause && (
+        <div className="mt-11 border-t border-line pt-6">
+          <SkipLink onClick={onPause}>잠시 멈춰서기</SkipLink>
+        </div>
+      )}
     </Screen>
   );
 }

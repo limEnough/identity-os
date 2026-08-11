@@ -9,7 +9,7 @@
 export { AppShell, Screen } from "./layout/Screen";
 export { Aurora } from "./layout/Aurora";
 export { Drawer } from "./layout/Drawer";
-export { FloatingCta } from "./layout/FloatingCta";
+export { CtaRow, FloatingCta } from "./layout/FloatingCta";
 
 /* 낱개 */
 export { Button, SkipLink } from "./primitives/Button";

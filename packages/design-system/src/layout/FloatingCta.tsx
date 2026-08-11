@@ -9,6 +9,16 @@ import type { ReactNode } from "react";
  *
  * fixed-layer는 <Screen />이 "떠오르지 않는 층"으로 알아보는 표식 — 페이드만 한다.
  */
+/**
+ * 나란히 놓이는 두 버튼 — 하나를 고르는 자리.
+ *
+ * 세로로 쌓으면 위가 먼저, 아래가 나중처럼 읽히지만 **이어 걷기와 새로 떠나기는
+ * 순서가 아니라 갈래**다. 나란히 두어야 둘 중 하나라는 것이 보인다.
+ */
+export function CtaRow({ children }: { children: ReactNode }) {
+  return <div className="flex gap-2.5 *:flex-1">{children}</div>;
+}
+
 export function FloatingCta({ children }: { children: ReactNode }) {
   return (
     <div className="fixed-layer pointer-events-none fixed bottom-0 left-1/2 z-20 flex w-full max-w-150 -translate-x-1/2 animate-appear flex-col gap-4 bg-[linear-gradient(to_top,var(--color-bg)_45%,rgb(245_247_255/0.85)_70%,transparent)] px-5 pt-8.5 pb-[calc(18px+env(safe-area-inset-bottom,0px))] *:pointer-events-auto">
